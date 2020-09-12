@@ -41,7 +41,6 @@ function Collider:move(x,y)
 	end
 	local ax, ay, cols, len =  self.entity.scene.world:move(self, x, y, collidefilter)
 
-	-- TODO update collide on up, down, left right info
 	self.collide = {up=nil,down=nil,left=nil,right=nil}
 
 	if len ~= 0 then

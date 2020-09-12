@@ -3,6 +3,7 @@ local Scene = require "src.scene"
 local Sprite = require "src.sprite"
 
 require "libs.TSerial"
+require "libs.misc"
 
 local Game = Object:extend(Object)
 
@@ -10,7 +11,7 @@ local lg,lf = love.graphics,love.filesystem
 
 local eventcall = {"keypressed","keyreleased","mousepressed","mousereleased","mousemoved","textinput","wheelmoved"}
 
-function Game:new()	
+function Game:new()
 	lg.setDefaultFilter("nearest", "nearest")
 
 	self.save = require "src.savegame"

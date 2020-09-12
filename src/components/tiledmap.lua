@@ -1,6 +1,6 @@
 local Component = require "src.components.component"
 
-local Map = require "libs.tiledmap"
+local lvt = require "libs.lovelytiles"
 
 local TiledMap = Component:extend(Component)
 
@@ -11,7 +11,7 @@ end
 function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 	TiledMap.super.new(self, entity)
 
-	self.data = Map(mapdata, startx, starty, w, h, layers)
+	self.data = lvt.new(mapdata, startx, starty, w, h, layers)
 
 	local scene = self.entity.scene
 	local x,y,z = self.position:get()
@@ -28,7 +28,14 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 			end
 		elseif layer.type == "objectgroup" then
 		    for _,obj in pairs(layer.objects) do
-		    	self.entity.scene:initPrefab(game.assets.prefabs[obj.name],obj.name,obj.x,obj.y,z+l)
+		    	if obj.type == "entity" then
+		    	    self.entity.scene:initPrefab(
+			    		game.assets.prefabs[obj.name],
+			    		obj.name,
+			    		obj.x,obj.y,z+l
+			    	)
+		    	end
+		    	
 			end
 		end
 		l = l + 1
@@ -136,9 +143,9 @@ function TiledMap:initEntities(playerEnt)
 	end
 end
 
-function TiledMap:debugLayout(ui)
+--[[function TiledMap:debugLayout(ui)
 	ui:layoutRow('dynamic', 20, 1)
 
-end
+end]]
 
 return TiledMap
