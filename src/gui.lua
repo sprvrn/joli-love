@@ -46,6 +46,14 @@ function GUI:update(dt)
 							ui:layoutRow('dynamic', 20, 2)
 							c.x = ui:property("x", -10000000, c.x, 10000000, 1, 1)
 							c.y = ui:property("y", -10000000, c.y, 10000000, 1, 1)
+							if game.settings.mouse then
+							    ui:layoutRow('dynamic', 20, 1)
+							    ui:label("Mouse position")
+							    ui:layoutRow('dynamic', 20, 2)
+							    local mx,my = c:mousePosition()
+							    ui:label(mx)
+							    ui:label(my)
+							end
 							ui:layoutRow('dynamic', 20, 1)
 							ui:label("Following : "..tostring(c.following))
 							ui:layoutRow('dynamic', 20, 2)
@@ -77,10 +85,6 @@ function GUI:update(dt)
 								ui:layoutRow('dynamic', 175, 1)
 								if ui:groupBegin(tostring(c), 'title','border','scrollbar') then
 									c:debugLayout(ui)
-									--for k,v in pairs(c) do
-										--displayfield(ui,k,v)
-
-									--end
 									ui:groupEnd()
 								end
 								

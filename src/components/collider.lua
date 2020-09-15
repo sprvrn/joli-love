@@ -29,6 +29,11 @@ function Collider:new(entity, w, h, solid, x, y)
 	self.collide = {up=nil,down=nil,left=nil,right=nil}
 
 	self.hidecollider = true
+
+	self.mousehover = false
+	self.dragable = false
+
+	self.prevFrameCol = {}
 end
 
 function Collider:move(x,y)
@@ -61,7 +66,7 @@ function Collider:move(x,y)
 	    end
 	end
 
-	return ax,ay
+	return ax, ay
 end
 
 function Collider:updatePosition()
@@ -73,6 +78,82 @@ function Collider:update(dt)
 	self:updatePosition()
 
 	self.entity.scene.world:update(self,self.x,self.y,self.w,self.h)
+
+	-- collision with mouse
+	local components = self.entity.components
+	if self.mousehover then
+		if not self.lastframehover then
+			for _,c in pairs(components) do
+				c:hoverEnter()
+			end
+		    self.lastframehover = true
+		end
+
+	    for _,c in pairs(components) do
+			c:hover()
+		end
+
+	    if game.input:pressed("leftclick") then
+	        for _,c in pairs(components) do
+				c:onLeftClick()
+			end
+	    end
+	    if game.input:pressed("rightclick") then
+	        for _,c in pairs(components) do
+				c:onRightClick()
+			end
+	    end
+	    if game.input:pressed("middleclick") then
+	        for _,c in pairs(components) do
+				c:onMiddleClick()
+			end
+	    end
+	end
+
+	if not self.mousehover then
+		if self.lastframehover then
+		    for _,c in pairs(components) do
+				c:hoverQuit()
+			end
+		end
+	    self.lastframehover = false
+	end
+
+	self.mousehover = false
+	-- end mouse
+	-- collision with entity
+	local colWith = {}
+	local x,y,w,h = self.entity.scene.world:getRect(self)
+	local items, tlen = self.entity.scene.world:queryRect(x,y,w,h)
+
+	for i=1,tlen do
+		local item = items[i].entity
+		if self.entity ~= item then
+			--print(self.entity.name,item.name)
+			if not table.contains(self.prevFrameCol,item) then
+				for _,c in pairs(components) do
+					c:onEnter(item)
+				end
+				if not table.contains(self.prevFrameCol,item) then
+					table.insert(self.prevFrameCol, item)
+				end
+			end
+			for _,c in pairs(components) do
+				c:onStay(item)
+			end
+			table.insert(colWith, item)
+		end
+	end
+
+	for _,prevState in pairs(self.prevFrameCol) do
+		if not table.contains(colWith,prevState) then
+			for _,c in pairs(components) do
+				c:onLeave(prevState)
+			end
+			table.remove(self.prevFrameCol, getIndex(self.prevFrameCol, prevState))
+		end
+	end
+	-- end collision entity
 end
 
 function Collider:draw()

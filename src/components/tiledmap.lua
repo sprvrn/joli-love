@@ -35,7 +35,8 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 		    	    scene:initPrefab(
 			    		game.assets.prefabs[obj.name],
 			    		obj.name,
-			    		obj.x+x,obj.y+y,z+l
+			    		obj.x+x,obj.y+y,z+l,
+			    		obj
 			    	)
 		    	end
 			end

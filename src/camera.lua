@@ -133,7 +133,8 @@ function Camera:fadeout(duration)
 end
 
 function Camera:mousePosition()
-	return love.mouse.getX() * self.scalex + self.x, love.mouse.getY() * self.scaley + self.y
+	return love.mouse.getX() / self.position.scalex + self.x - self.position.x / self.position.scalex,
+		   love.mouse.getY() / self.position.scaley + self.y - self.position.y / self.position.scaley
 end
 
 function Camera:toScreen(x,y)

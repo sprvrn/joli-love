@@ -23,7 +23,7 @@ function Scene:new(name)
 		game.settings.canvas.scale)
 end
 
-function Scene:newentity(name,...)
+function Scene:newentity(name, ...)
 	local sortByZ = function(a,b)
 		return a.position.z < b.position.z
 	end
@@ -31,7 +31,7 @@ function Scene:newentity(name,...)
 		return a.name < b.name
 	end
 
-	local newEntity = Entity(name,...)
+	local newEntity = Entity(name, ...)
 	newEntity.scene = self
 	if self[name] then
 	    --print("Warning : an entity named " .. name .. " already exists.")
@@ -40,7 +40,6 @@ function Scene:newentity(name,...)
 
 	table.sort(self.entities, sortByName)
 	table.sort(self.entities, sortByZ)
-
 
 	self[name] = newEntity
 	return newEntity
@@ -90,6 +89,20 @@ function Scene:update(dt)
 
 	for _,camera in pairs(self.cameras) do
 		camera:update(dt)
+
+		if self.world and game.settings.mouse then
+			local mx, my = camera:mousePosition()
+		    local items, len = self.world:queryPoint(mx, my, function(item)
+		    	if tostring(item) == "collider" then
+		    		return true
+		    	end
+		    end)
+
+		    for i=1,len do
+		    	local item = items[i]
+		    	item.mousehover = true
+		    end
+		end
 	end
 
 	for _,entity in pairs(self.entities) do

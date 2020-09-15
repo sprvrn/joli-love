@@ -18,6 +18,8 @@ function Game:new()
 
 	self:loadSettings()
 
+	self.t = 0
+
 	self.game_states = require("libs.cargo").init('assets/states')
 
 	self.assets = require("libs.cargo").init({
@@ -164,6 +166,8 @@ function Game:update(dt)
 	end
 
 	self.debug:update(dt)
+
+	self.t = self.t + dt
 end
 
 function Game:draw()
