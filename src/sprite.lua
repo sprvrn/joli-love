@@ -63,14 +63,17 @@ function Sprite:debugLayout(ui)
 		ui:layoutRow('dynamic', 20, 2)
 		ui:label("Img width : "..tostring(self.image:getWidth()))
 		ui:label("Img height : "..tostring(self.image:getHeight()))
-		ui:layoutRow('dynamic', 20, 2)
-		ui:label("Sprite width : "..tostring(self.size.w))
-		ui:label("Sprite height : "..tostring(self.size.h))
-		ui:layoutRow('dynamic', 20, 1)
-		ui:label("Animations")
-		for name,anim in pairs(self.anims) do
-			ui:label(" - "..name)
+		if self.size then
+		    ui:layoutRow('dynamic', 20, 2)
+			ui:label("Sprite width : "..tostring(self.size.w))
+			ui:label("Sprite height : "..tostring(self.size.h))
+			ui:layoutRow('dynamic', 20, 1)
+			ui:label("Animations")
+			for name,anim in pairs(self.anims) do
+				ui:label(" - "..name)
+			end
 		end
+		
 		ui:groupEnd()
 	end
 end

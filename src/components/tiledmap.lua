@@ -18,24 +18,26 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 
 	local l = 0
 
-	for name,layer in pairs(self.data.layers) do
-		if layer.type == "tilelayer" then
-			local b = 1
-		    for _,batch in pairs(layer.batches) do
-				scene:newentity(layer.name .. "_" .. tostring(b),x,y,z + l)
-					:addComponent("renderer","batch",batch)
-				b = b + 1
-			end
+	if self.data.backgroundcolor then
+	    scene:newentity("backgroundcolor",x,y,z-0.1)
+	    	:addComponent("renderer","shape",self.data.backgroundcolor,"rect","fill",
+	    		self.data.tilewidth*self.data.mapWidth,
+	    		self.data.tileheight*self.data.mapHeight)
+	end
+
+	for _,layer in pairs(self.data.layers) do
+		if layer.type == "tilelayer" or layer.type == "imagelayer" then
+			scene:newentity(layer.name,x,y,z + l)
+				:addComponent("tiledmaplayer", layer)
 		elseif layer.type == "objectgroup" then
 		    for _,obj in pairs(layer.objects) do
 		    	if obj.type == "entity" then
-		    	    self.entity.scene:initPrefab(
+		    	    scene:initPrefab(
 			    		game.assets.prefabs[obj.name],
 			    		obj.name,
-			    		obj.x,obj.y,z+l
+			    		obj.x+x,obj.y+y,z+l
 			    	)
 		    	end
-		    	
 			end
 		end
 		l = l + 1
@@ -57,9 +59,6 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 end
 
 function TiledMap:update( dt )
-	if self.data then
-		self.data:update(dt)
-	end
 end
 
 function TiledMap:initCollidables()
@@ -70,6 +69,7 @@ function TiledMap:initCollidables()
 	end
 
 	local world = self.entity.scene.world
+	local px,py = self.position:get()
 
 	for _,layer in pairs(self.data.layers) do
 		if layer.properties.collidable then
@@ -80,12 +80,13 @@ function TiledMap:initCollidables()
 		    			local c = {
 		    				type = "wall",
 		    				solid = true,
-		    				x = (x - 1) * tileset.tilewidth,
-		    				y = (y - 1) * tileset.tileheight,
+		    				x = (x - 1) * tileset.tilewidth + px,
+		    				y = (y - 1) * tileset.tileheight + py,
 		    				width = tileset.tilewidth,
 		    				height = tileset.tileheight
 		    			}
 		    			if tile.data.objectGroup and tile.data.objectGroup.objects then
+		    				-- TODO make ALL objects collidable (not just first one)
 		    			    local o = tile.data.objectGroup.objects[1]
 		    			    c.x = c.x + o.x
 		    			    c.y = c.y + o.y
