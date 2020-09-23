@@ -20,6 +20,7 @@ end
 
 function Renderer:new(entity, type, ...)
 	Renderer.super.new(self, entity)
+	self.rendertype = type
 	self.render = method[type](...)
 end
 

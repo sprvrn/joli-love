@@ -6,25 +6,27 @@ function SoundSource:__tostring()
 	return "soundsource"
 end
 
-function SoundSource:new(arg,set)
-	self.layers = {}
+function SoundSource:new(source,set)
 	self.set = set
 
-	if type(arg) == "table" then
-	    for name,layer in pairs(arg) do
-	    	self.layers[name] = layer
-	    end
-	end
+	self.sources = {}
 
-	self.layers = {arg}
+	if type(source) == "table" then
+	    --self.sources = source
+	    for i=1,#source do
+	    	table.insert(self.sources, source[i]:clone())
+	    end
+	else
+	    self.sources[1] = source:clone()
+	end
 
 	self.maxvolume = 1
 	self.volume = self.maxvolume
 end
 
 function SoundSource:update( dt )
-	for _,layer in pairs(self.layers) do
-		layer:setVolume(self.volume)
+	for _,s in pairs(self.sources) do
+		s:setVolume(self.volume)
 	end
 end
 
@@ -38,14 +40,28 @@ function SoundSource:fadeout(dur)
 	self.set.entity:tween(dur,{volume = 0},'linear',self)
 end
 
-function SoundSource:play(loop,dur)
+function SoundSource:play(loop,intro,fadedur)
 	loop = loop or false
-	if dur then
-		self:fadein(dur)
+	if type(fadedur) == "number" then
+		self:fadein(fadedur)
 	end
-	for _,layer in pairs(self.layers) do
-		layer:setLooping(loop)
-		layer:play()	
+	if #self.sources > 1 then
+	    if intro then
+	        self.sources[1]:setLooping(false)
+		    self.sources[1]:play()
+		    self.set.entity:cron("after",self.sources[1]:getDuration("seconds"),
+		    	function()
+		    		self.sources[1]:stop()
+		    		self.sources[2]:setLooping(loop)
+		    		self.sources[2]:play()
+		    	end)
+	    else
+	        self.sources[2]:setLooping(loop)
+	    	self.sources[2]:play()
+	    end
+	elseif #self.sources == 1 then
+	    self.sources[1]:setLooping(loop)
+	    self.sources[1]:play()
 	end
 end
 
@@ -53,15 +69,15 @@ function SoundSource:stop(dur)
 	if dur then
 	    self:fadeout(dur)
 	end
-	for _,layer in pairs(self.layers) do
-		layer:stop()
+	for _,s in pairs(self.sources) do
+		s:stop()
 	end
 end
 
 function SoundSource:pause(dur)
 	local f = function()
-		for _,layer in pairs(self.layers) do
-			layer:pause()
+		for _,s in pairs(self.sources) do
+			s:pause()
 		end
 	end
 
@@ -77,12 +93,12 @@ function SoundSource:pause(dur)
 end
 
 function SoundSource:resume(dur)
-	for _,layer in pairs(self.layers) do
-		if not layer:isPlaying() and layer:tell() ~= 0.0 then
+	for _,s in pairs(self.sources) do
+		if not s:isPlaying() and s:tell() ~= 0.0 then
 			if dur then
 			    self:fadein(dur)
 			end
-		    layer:play()
+		    s:play()
 		end
 	end
 end

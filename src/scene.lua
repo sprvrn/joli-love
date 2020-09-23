@@ -34,7 +34,7 @@ function Scene:newentity(name, ...)
 	local newEntity = Entity(name, ...)
 	newEntity.scene = self
 	if self[name] then
-	    --print("Warning : an entity named " .. name .. " already exists.")
+		--print("Warning : an entity named " .. name .. " already exists.")
 	end
 	table.insert(self.entities, newEntity)
 
@@ -47,33 +47,35 @@ end
 
 function Scene:initPrefab(prefab, ...)
 	if type(prefab) == "function" then
-	    return prefab(self, ...)
+		return prefab(self, ...)
 	else
-	    print("Warning : a prefab couldn't be loaded.")
+		print("Warning : a prefab couldn't be loaded.")
 	end
 end
 
 function Scene:getEntityByName(name)
 	for _,e in pairs(self.entities) do
 		if name == e.name then
-		    return e
+			return e
 		end
 	end
 end
 
 function Scene:removeentity(entity)
 	if entity.collider then
-	    self.world:remove(entity.collider)
+		self.world:remove(entity.collider)
 	end
 	table.remove(self.entities, getIndex(self.entities,entity))
 end
 
 function Scene:addCamera(name,...)
-	self.cameras[name] = Camera(self,...)
+	self.cameras[name] = Camera(self,name,...)
 end
 
 function Scene:createPhysicWorld()
-	self.world = bump.newWorld()
+	if self.world == nil then
+		self.world = bump.newWorld()
+	end
 end
 
 function Scene:addCollider(item)
@@ -84,7 +86,7 @@ function Scene:update(dt)
 	Scene.super.update(self,dt)
 
 	if self.pause then
-	    return
+		return
 	end
 
 	for _,camera in pairs(self.cameras) do
@@ -92,16 +94,16 @@ function Scene:update(dt)
 
 		if self.world and game.settings.mouse then
 			local mx, my = camera:mousePosition()
-		    local items, len = self.world:queryPoint(mx, my, function(item)
-		    	if tostring(item) == "collider" then
-		    		return true
-		    	end
-		    end)
+			local items, len = self.world:queryPoint(mx, my, function(item)
+				if tostring(item) == "collider" then
+					return true
+				end
+			end)
 
-		    for i=1,len do
-		    	local item = items[i]
-		    	item.mousehover = true
-		    end
+			for i=1,len do
+				local item = items[i]
+				item.mousehover = true
+			end
 		end
 	end
 
@@ -112,18 +114,18 @@ end
 
 function Scene:drawentities(tags,mode)
 	if self.hide then
-	    return
+		return
 	end
 	mode = mode or "incl"
 	if type(tags) == "string" then
-	    tags = {tags}
+		tags = {tags}
 	end
 	for _,entity in pairs(self.entities) do
 		if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
 			(tags ~= nil and mode == "excl" and not table.contains(tags,entity.tag)) or
 			tags == nil then
 
-		    entity:draw()
+			entity:draw()
 		end
 	end
 end
@@ -141,7 +143,7 @@ function Scene:particle(system,x,y,z,tag)
 		particle:size(system.size[1],system.size[2],system.size[3])
 
 		if system.collider then
-		    particle.entity:addComponent("Collider",10,10)
+			particle.entity:addComponent("Collider",10,10)
 		end
 	end
 	
@@ -156,17 +158,17 @@ end
 
 function Scene:setPause(pause)
 	--if pause then
-	    self.pause = pause
-	    for _,e in pairs(self.entities) do
-	    	local set = e:getComponent("SoundSet")
-	    	if set then
-	    		if pause then
-	    		    set:pause()
-	    		else
-	    		    set:resume()
-	    		end
-	    	end
-	    end
+		self.pause = pause
+		for _,e in pairs(self.entities) do
+			local set = e:getComponent("SoundSet")
+			if set then
+				if pause then
+					set:pause()
+				else
+					set:resume()
+				end
+			end
+		end
 	--end
 end
 

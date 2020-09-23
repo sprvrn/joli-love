@@ -29,6 +29,8 @@ function Game:new()
 		}
 	})
 
+	self.statetree = self:buildStateTree(require('assets.states.statetree'))
+
 	self.components = require("libs.cargo").init('src/components')
 	self.assetscomponents = require("libs.cargo").init('assets/components')
 
@@ -55,7 +57,7 @@ function Game:new()
 	end
 
 	self.defaultfont = love.graphics.getFont()
-	lg.setFont(self.assets.fonts.main.font)
+	--lg.setFont(self.assets.fonts.main.font)
 
 	self.scenes = {}
 
@@ -85,6 +87,15 @@ function Game:newscene(name)
 	self.scenes[name] = newScene
 	self[name] = newScene
 	return newScene
+end
+
+function Game:destroyscene(name)
+	if self.scenes[name] then
+	    self.scenes[name] = nil
+	    self[name] = nil
+	else
+	    print("Warning: attempt to destroy scene <"..name..">, but it does not exists.")
+	end
 end
 
 function Game:loadSettings()
@@ -123,26 +134,100 @@ function Game:setWindow()
 	love.window.setFullscreen(self.settings.window.fullscreen)
 end
 
-function Game:change_state(n)
-	if self.game_states[n] then
-		if self.current_state then
-			if self:state().on_exit then
-				self:state().on_exit()
-			end
+function Game:buildStateTree(state,parent)
+	local t = type(state)
+	local r = {}
+	if t == "table" then
+		for name,s in pairs(state) do
+			r[name] = {
+				name = name,
+				methods = self.assets.states[name],
+				parent = parent,
+				childs = self:buildStateTree(s),
+				pause = false,
+				hide = false
+			}
+			r[name].childs = self:buildStateTree(s,r[name])
 		end
-		self.current_state=n
-		if self.game_states[n].on_enter then
-			self.game_states[n].on_enter()
-		end
-	else
-	    print("state",n,"not found")
 	end
+	return r
 end
 
 function Game:state()
-	if self.current_state~=nil then
-		return self.game_states[self.current_state]
-	end 
+	return self.current_state
+end
+
+function Game:stateUpdate(state,dt)
+	if state.update then
+	    state.update(dt)
+	    if state.parent then
+	        self:stateUpdate(state.parent,dt)
+	    end
+	end
+end
+
+function Game:stateUpdate(state,dt)
+	if state.methods.update then
+		if not state.pause then
+		    state.methods.update(dt)
+		end
+	    
+	    if state.parent and not state.parent.skipnext then
+	        self:stateUpdate(state.parent,dt)
+	    end
+	    if state.parent then
+	    	state.parent.skipnext = false
+	    end
+	end
+end
+
+function Game:stateDraw(state,t)
+	if state.methods.draw then
+		if not state.hide then
+			table.insert(t, state.methods.draw)
+		end
+	    
+	    if state.parent then
+	        t = self:stateDraw(state.parent,t)
+	    end
+	end
+	return t
+end
+
+function Game:start(statename)
+	if not statename then
+	    for name,state in pairs(self.statetree) do
+			self:stateActivation(name)
+			break
+		end
+	end
+end
+
+function Game:stateActivation(name)
+	assert(type(name)=="string")
+	if not self.current_state then
+	    self.current_state = self.statetree[name]
+	else
+	    if self.current_state.childs[name] then
+	        self.current_state = self.current_state.childs[name]
+	    end
+	end
+	
+	if self.current_state.methods.on_enter then
+		self.current_state.methods.on_enter()
+	end
+end
+
+function Game:stateQuit()
+	if self.current_state.methods.on_exit then
+	    self.current_state.methods.on_exit()
+	end
+	if self.current_state.parent then
+		self.current_state = self.current_state.parent
+		self.current_state.skipnext = true
+	else
+	    self.current_state = nil
+	end
 end
 
 function Game:update(dt)
@@ -150,7 +235,7 @@ function Game:update(dt)
 
 	self.gui:update(dt)
 
-	if self.input:pressed("displaydebug") then
+	if self.settings.debug and self.input:pressed("displaydebug") then
 	    self.displaydebug = not self.displaydebug
 	end
 
@@ -160,9 +245,7 @@ function Game:update(dt)
 
 	local state = self:state()
 	if state then
-		if state.update then
-		    state.update(dt)
-		end
+		self:stateUpdate(state,dt)
 	end
 
 	self.debug:update(dt)
@@ -173,8 +256,9 @@ end
 function Game:draw()
 	local state = self:state()
 	if state then
-		if state.draw then
-		    state.draw()
+		local draws = self:stateDraw(state, {})
+		for i=#draws,1,-1 do
+			draws[i]()
 		end
 	end
 

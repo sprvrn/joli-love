@@ -21,14 +21,53 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 	if self.data.backgroundcolor then
 	    scene:newentity("backgroundcolor",x,y,z-0.1)
 	    	:addComponent("renderer","shape",self.data.backgroundcolor,"rect","fill",
-	    		self.data.tilewidth*self.data.mapWidth,
-	    		self.data.tileheight*self.data.mapHeight)
+	    		self.data.tilewidth * self.data.mapWidth,
+	    		self.data.tileheight * self.data.mapHeight)
 	end
 
 	for _,layer in pairs(self.data.layers) do
 		if layer.type == "tilelayer" or layer.type == "imagelayer" then
 			scene:newentity(layer.name,x,y,z + l)
 				:addComponent("tiledmaplayer", layer)
+				if layer.tiles then
+				for x,t in pairs(layer.tiles) do
+			    		for y,tile in pairs(t) do
+			    			if tile.data then
+			    				if type(tile.data.type) == "string" then
+			    					self.entity.scene:initPrefab(
+							    		game.assets.prefabs[tile.data.properties.name],
+							    		tile.data.properties.name,
+							    		(x-1)*self.data.tilewidth,(y-1)*self.data.tileheight,z+l,
+							    		tile
+							    	)
+							    	layer:removeTile(x,y)
+			    				    --[[local objData = MapObject:get(tile.data.properties.item)
+				    			    if objData then
+				    			        local obj = MapObject(self,objData,(x-1)*self.map.tilewidth,
+				    			        (y-1)*self.map.tileheight,16,16)
+				    			        if objData.image == nil then
+				    			            obj.quad = tile.data.quad
+										    obj.image = tile.tileset.image
+				    			        end
+
+				    			        if tile.data.objectGroup then
+				    			        	local box = tile.data.objectGroup.objects[1]
+				    			        	obj.x = obj.x + box.x
+				    			        	obj.y = obj.y + box.y
+				    			        	obj.sprite_offx = box.x
+									    	obj.sprite_offy = box.y
+									    	obj.width = box.width
+									    	obj.height = box.height
+									    	obj:update_map_item()
+				    			        end
+
+				    			        
+				    			    end]]
+			    				end
+			    			end
+			    		end
+			    	end
+			end
 		elseif layer.type == "objectgroup" then
 		    for _,obj in pairs(layer.objects) do
 		    	if obj.type == "entity" then
@@ -38,7 +77,9 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
 			    		obj.x+x,obj.y+y,z+l,
 			    		obj
 			    	)
-		    	end
+		    	elseif layer.type == "tilelayer" then
+				    
+				   end
 			end
 		end
 		l = l + 1
@@ -70,10 +111,10 @@ function TiledMap:initCollidables()
 	end
 
 	local world = self.entity.scene.world
-	local px,py = self.position:get()
+	local px, py = self.position:get()
 
 	for _,layer in pairs(self.data.layers) do
-		if layer.properties.collidable then
+		if layer.tiles then
 		    for x,t in pairs(layer.tiles) do
 	    		for y,tile in pairs(t) do
 		    		if tile.tileset ~= nil then
@@ -87,15 +128,25 @@ function TiledMap:initCollidables()
 		    				height = tileset.tileheight
 		    			}
 		    			if tile.data.objectGroup and tile.data.objectGroup.objects then
-		    				-- TODO make ALL objects collidable (not just first one)
-		    			    local o = tile.data.objectGroup.objects[1]
-		    			    c.x = c.x + o.x
-		    			    c.y = c.y + o.y
-		    			    c.width = o.width
-		    			    c.height = o.height
-		    			end
-		    		    world:add(c,c.x,c.y,c.width,c.height)
-		    		    table.insert(self.collidables, c)
+		    			    for _,o in pairs(tile.data.objectGroup.objects) do
+		    			    	if (layer.properties and layer.properties.collidable) or
+		    			    		(o.properties and o.properties.collidable) then
+		    			    	    local c1 = copy(c)
+			    			    	c1.x = c1.x + o.x
+				    			    c1.y = c1.y + o.y
+				    			    c1.width = o.width
+				    			    c1.height = o.height
+
+			    		    		self:addCollidable(c1)
+		    			    	end
+		    			    	
+		    			    end
+		    			else
+		    				if (layer.properties and layer.properties.collidable) or
+		    			    	(tile.properties and tile.properties.collidable) then
+		    		    	self:addCollidable(c)
+		    		    	end
+		    		    end
 		    		end
 		    	end
 		    end
@@ -103,46 +154,9 @@ function TiledMap:initCollidables()
 	end
 end
 
-
-function TiledMap:initEntities(playerEnt)
-	for _,layer in pairs(self.layers) do
-		if layer.type == "objectgroup" then
-			for _,obj in pairs(layer.objects) do
-
-			end
-		end
-		--[[elseif layer.type == "tilelayer" then
-		    for x,t in pairs(layer.tiles) do
-	    		for y,tile in pairs(t) do
-	    			if tile.data then
-	    				if tile.data.properties then
-	    				    local objData = MapObject:get(tile.data.properties.item)
-		    			    if objData then
-		    			        local obj = MapObject(self,objData,(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,16,16)
-		    			        if objData.image == nil then
-		    			            obj.quad = tile.data.quad
-								    obj.image = tile.tileset.image
-		    			        end
-
-		    			        if tile.data.objectGroup then
-		    			        	local box = tile.data.objectGroup.objects[1]
-		    			        	obj.x = obj.x + box.x
-		    			        	obj.y = obj.y + box.y
-		    			        	obj.sprite_offx = box.x
-							    	obj.sprite_offy = box.y
-							    	obj.width = box.width
-							    	obj.height = box.height
-							    	obj:update_map_item()
-		    			        end
-
-		    			        layer:removeTile(x,y)
-		    			    end
-	    				end
-	    			end
-	    		end
-	    	end
-		end]]
-	end
+function TiledMap:addCollidable(c)
+	self.entity.scene.world:add(c,c.x,c.y,c.width,c.height)
+	table.insert(self.collidables, c)
 end
 
 --[[function TiledMap:debugLayout(ui)

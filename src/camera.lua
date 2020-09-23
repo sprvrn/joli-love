@@ -8,8 +8,10 @@ function Camera:__tostring()
 	return "camera"
 end
 
-function Camera:new(scene,x,y,w,h,r,sx,sy)
-	Camera.super.new(self)
+function Camera:new(scene,name,x,y,w,h,r,sx,sy)
+	Camera.super.new(self,name)
+
+	self.name = name
 
 	self.scene = scene
 
@@ -25,7 +27,7 @@ function Camera:new(scene,x,y,w,h,r,sx,sy)
 	self.position.scalex = sx or 1
 	self.position.scaley = sy or self.position.scalex
 
-	self.zoom = 0
+	self.zoom = 1
 
 	self.window = {x1=nil,y1=nil,x2=nil,y2=nil}
 
@@ -44,8 +46,8 @@ function Camera:set()
 
 	lg.push()
 	lg.rotate(-self.r)
-    --lg.scale(self.position.scalex,self.position.scaley)
-    lg.translate(-self.x - self.zoom, -self.y - self.zoom)
+    lg.scale(self.zoom,self.zoom)
+    lg.translate(-self.x, -self.y)
 end
 
 function Camera:unset()
@@ -107,10 +109,10 @@ function Camera:follow(l)
 	    return
 	end
 	l = l or 1
-	local x, y = self.following.components.position.x, self.following.components.position.y
+	local x, y = self.following.position.x, self.following.position.y
 	self:setPosition(
-		lerp(self.x, x - self.width / 2, l),
-		lerp(self.y, y - self.height / 2, l)
+		lerp(self.x, x - self.width*0.5, l),
+		lerp(self.y, y - self.height*0.5, l)
 	)
 end
 
@@ -139,6 +141,37 @@ end
 
 function Camera:toScreen(x,y)
 	return (x - self.x) * self.scalex , (y - self.y) * self.scaley
+end
+
+function Camera:debugLayout(ui)
+	if ui:treePush('node',self.name) then
+		ui:layoutRow('dynamic', 20, 2)
+		self.x = ui:property("x", -10000000, self.x, 10000000, 1, 1)
+		self.y = ui:property("y", -10000000, self.y, 10000000, 1, 1)
+		if game.settings.mouse then
+		    ui:layoutRow('dynamic', 20, 1)
+		    ui:label("Mouse position")
+		    ui:layoutRow('dynamic', 20, 2)
+		    local mx,my = self:mousePosition()
+		    ui:label(mx)
+		    ui:label(my)
+		end
+		ui:layoutRow('dynamic', 20, 1)
+		ui:label("Following : "..tostring(self.following))
+		ui:layoutRow('dynamic', 20, 2)
+		self.width = ui:property("Width", 50, self.width, 40000, 1, 1)
+		self.height = ui:property("Height", 50, self.height, 40000, 1, 1)
+		ui:layoutRow('dynamic', 20, 2)
+		self.position.scalex = ui:property("Scale x", 1, self.position.scalex, 50, 1, 1)
+		self.position.scaley = ui:property("Scale y", 1, self.position.scaley, 50, 1, 1)
+		ui:layoutRow('dynamic', 20, 1)
+		self.alpha = ui:property("Alpha", 0, self.alpha, 1, 0.01, 0.01)
+		ui:layoutRow('dynamic', 20, 1)
+		self.zoom = ui:property("Zoom", 0, self.zoom, 1000000, 0.1, 0.1)
+		ui:layoutRow('dynamic', 20, 1)
+		self.smoothfactor = ui:property("Smooth", 0, self.smoothfactor, 1, 0.01, 0.01)
+		ui:treePop()
+	end
 end
 
 return Camera

@@ -8,11 +8,11 @@ function Collider:__tostring()
 	return "collider"
 end
 
-function Collider:new(entity, w, h, solid, x, y)
+function Collider:new(entity, w, h, solid, ox, oy)
 	Collider.super.new(self, entity)
 
-	self.ox = x or 0
-	self.oy = y or 0
+	self.ox = ox or 0
+	self.oy = oy or 0
 
 	self:updatePosition()
 
@@ -129,7 +129,6 @@ function Collider:update(dt)
 	for i=1,tlen do
 		local item = items[i].entity
 		if self.entity ~= item then
-			--print(self.entity.name,item.name)
 			if not table.contains(self.prevFrameCol,item) then
 				for _,c in pairs(components) do
 					c:onEnter(item)

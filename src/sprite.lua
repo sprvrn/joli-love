@@ -21,6 +21,10 @@ function Sprite.get(file)
 	end
 end
 
+function Sprite:__tostring()
+	return "sprite"
+end
+
 function Sprite:new(filepath)
 	local img = Sprite.get(filepath)
 

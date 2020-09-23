@@ -14,10 +14,16 @@ function TextRenderer:new(text,style,width,align)
 
 	self.text = tostring(text)
 	self.width = width or game.assets.settings.canvas.width
-	self.style = style or game.assets.fonts.main
+	self.style = game.assets.fonts[style] or game.assets.fonts.main
 	self.tint = self.style.color or {1,1,1,1}
 	self.align = align or "left"
 	self.progress = 1
+end
+
+function TextRenderer:setStyle(name)
+	assert(type(name) == "string")
+	self.style = game.assets.fonts[name]
+	self.tint = self.style.color or {1,1,1,1}
 end
 
 function TextRenderer:draw(position,ox,oy)

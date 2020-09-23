@@ -11,7 +11,10 @@ function Entity:__tostring()
 end
 
 function Entity:new(name, x, y, z, r, sx, sy, tag)
+	assert(type(name) == "string","Entity name must be a string (was "..type(name)..")")
+
 	self.name = name
+
 	self.tag = tag
 	self.components = {}
 
@@ -42,6 +45,8 @@ function Entity:addComponent(name, ...)
 end
 
 function Entity:getComponent(name)
+	assert(type(name)=="string")
+	
 	name = string.lower(name)
 	for _,component in pairs(self.components) do
 		if name == tostring(component) then

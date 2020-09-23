@@ -34,7 +34,7 @@ function GUI:update(dt)
 			ui:layoutRow('dynamic', 20, 1)
 			ui:label('Fps : '..tostring(love.timer.getFPS()))
 			ui:layoutRow('dynamic', 20, 1)
-			ui:label("State : "..tostring(game.current_state))
+			ui:label("State : "..tostring(game.current_state.name))
 			
 			for _,scene in pairs(game.scenes) do
 				if ui:treePush('tab',scene.name) then
@@ -42,32 +42,7 @@ function GUI:update(dt)
 					scene.pause = ui:checkbox("Pause", scene.pause)
 					scene.hide = ui:checkbox("Hide", scene.hide)
 					for name,c in pairs(scene.cameras) do
-						if ui:treePush('node',name) then
-							ui:layoutRow('dynamic', 20, 2)
-							c.x = ui:property("x", -10000000, c.x, 10000000, 1, 1)
-							c.y = ui:property("y", -10000000, c.y, 10000000, 1, 1)
-							if game.settings.mouse then
-							    ui:layoutRow('dynamic', 20, 1)
-							    ui:label("Mouse position")
-							    ui:layoutRow('dynamic', 20, 2)
-							    local mx,my = c:mousePosition()
-							    ui:label(mx)
-							    ui:label(my)
-							end
-							ui:layoutRow('dynamic', 20, 1)
-							ui:label("Following : "..tostring(c.following))
-							ui:layoutRow('dynamic', 20, 2)
-							c.width = ui:property("Width", 50, c.width, 40000, 1, 1)
-							c.height = ui:property("Height", 50, c.height, 40000, 1, 1)
-							ui:layoutRow('dynamic', 20, 2)
-							c.position.scalex = ui:property("Scale x", 1, c.position.scalex, 50, 1, 1)
-							c.position.scaley = ui:property("Scale y", 1, c.position.scaley, 50, 1, 1)
-							ui:layoutRow('dynamic', 20, 1)
-							c.alpha = ui:property("Alpha", 0, c.alpha, 1, 0.01, 0.01)
-							ui:layoutRow('dynamic', 20, 1)
-							c.smoothfactor = ui:property("Smooth", 0, c.smoothfactor, 1, 0.01, 0.01)
-							ui:treePop()
-						end
+						c:debugLayout(ui)
 					end
 					ui:label("Entity ( #"..tostring(#scene.entities)..")")
 					for _,e in pairs(scene.entities) do

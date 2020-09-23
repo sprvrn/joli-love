@@ -14,13 +14,13 @@ function SoundSet:new(entity)
 	self.sources = {}
 end
 
-function SoundSet:addSource(name, sound, play, loop)
-	self.sources[name] = SoundSource(sound,self)
+function SoundSet:addSource(name, sounds, play, loop, intro)
+	self.sources[name] = SoundSource(sounds,self)
 	if play then
-	    self.sources[name]:play(loop)
+	    self.sources[name]:play(loop, intro)
 	end
 
-	return self
+	return self.sources[name]
 end
 
 function SoundSet:update( dt )
@@ -38,7 +38,6 @@ end
 function SoundSet:resume(dur)
 	for _,source in pairs(self.sources) do
 		source:resume(dur)
-		
 	end
 end
 
