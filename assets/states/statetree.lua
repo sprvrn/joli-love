@@ -1,0 +1,6 @@
+return {
+	game = {
+		menu = {},
+		pause = {}
+	}
+}
