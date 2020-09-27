@@ -5,6 +5,7 @@ local Sprite = require "src.sprite"
 require "libs.TSerial"
 require "libs.misc"
 local cargo = require("libs.cargo")
+local baton = require ("libs.baton")
 
 local Game = Object:extend()
 
@@ -64,7 +65,7 @@ function Game:new()
 
 	self.filename = "1"
 
-	self.input = self.assets.inputs
+	self.input = baton.new(self.assets.inputs)
 
 	self.displaydebug = false
 	self.debug = require("src.debug")()
