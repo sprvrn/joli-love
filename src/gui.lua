@@ -1,7 +1,7 @@
 local nuklear = require "nuklear"
 local Object = require "libs.classic"
 
-local GUI = Object:extend(Object)
+local GUI = Object:extend()
 
 function GUI:new()
 	self.ui = nuklear.newUI()

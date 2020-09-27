@@ -4,7 +4,7 @@ local nuklear = require "nuklear"
 
 local lg = love.graphics
 
-local Renderer = Object:extend(Object)
+local Renderer = Object:extend()
 
 function Renderer:__tostring()
 	return "renderer"

@@ -62,9 +62,10 @@ function Scene:getEntityByName(name)
 end
 
 function Scene:removeentity(entity)
-	if entity.collider then
+	if entity.collider and self.world then
 		self.world:remove(entity.collider)
 	end
+	self[entity.name] = nil
 	table.remove(self.entities, getIndex(self.entities,entity))
 end
 
@@ -107,8 +108,11 @@ function Scene:update(dt)
 		end
 	end
 
-	for _,entity in pairs(self.entities) do
-		entity:update(dt)
+	for i=1,#self.entities do
+		local entity = self.entities[i]
+		if entity then
+		    entity:update(dt)
+		end
 	end
 end
 
@@ -120,12 +124,15 @@ function Scene:drawentities(tags,mode)
 	if type(tags) == "string" then
 		tags = {tags}
 	end
-	for _,entity in pairs(self.entities) do
-		if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
-			(tags ~= nil and mode == "excl" and not table.contains(tags,entity.tag)) or
-			tags == nil then
+	for i=1,#self.entities do
+		local entity = self.entities[i]
+		if entity then
+		    if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
+				(tags ~= nil and mode == "excl" and not table.contains(tags,entity.tag)) or
+				tags == nil then
 
-			entity:draw()
+				entity:draw()
+			end
 		end
 	end
 end

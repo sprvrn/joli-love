@@ -1,7 +1,7 @@
 local Object = require "libs.classic"
 local debugGraph = require 'libs.debugGraph'
 
-local Debug = Object:extend(Object)
+local Debug = Object:extend()
 
 local lg = love.graphics
 

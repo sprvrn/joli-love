@@ -3,7 +3,7 @@ local anim8 = require "libs.anim8"
 
 local lg = love.graphics
 
-local Sprite = Object.extend(Object)
+local Sprite = Object:extend()
 
 function Sprite.load(img)
 	return Sprite(img)

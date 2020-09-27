@@ -1,6 +1,6 @@
 local Object = require "libs.classic"
 
-local SoundSource = Object:extend(Object)
+local SoundSource = Object:extend()
 
 function SoundSource:__tostring()
 	return "soundsource"

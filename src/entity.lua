@@ -4,7 +4,7 @@ local cron = require "libs.cron"
 
 local lg = love.graphics
 
-local Entity = Object:extend(Object)
+local Entity = Object:extend()
 
 function Entity:__tostring()
 	return "entity:"..self.name
@@ -38,7 +38,8 @@ function Entity:addComponent(name, ...)
 	end
 
 	local c = comp(self, ...)
-	self.components[name] = c
+	--self.components[name] = c
+	table.insert(self.components, c)
 	self[name] = c
 
 	return self
@@ -48,7 +49,8 @@ function Entity:getComponent(name)
 	assert(type(name)=="string")
 	
 	name = string.lower(name)
-	for _,component in pairs(self.components) do
+	for i=1,#self.components do
+		local component = self.components[i]
 		if name == tostring(component) then
 		    return component
 		end
@@ -59,22 +61,29 @@ function Entity:update(dt)
 	if self.pause then
 	    return
 	end
-	for _,c in pairs(self.components) do
-		c:update(dt)
+	for i=1,#self.components do
+		local component = self.components[i]
+		component:update(dt)
 	end
 
 	self:updateshake(dt)
 
-	for _,cron in pairs(self.crons) do
-		local expired = cron:update(dt)
-		if expired then
-			table.remove(self.crons, getIndex(self.crons,cron))
+	for i=1,#self.crons do
+		local cron = self.crons[i]
+		if cron then
+		    local expired = cron:update(dt)
+			if expired then
+				table.remove(self.crons, getIndex(self.crons, cron))
+			end
 		end
 	end
-	for _,tween in pairs(self.tweens) do
-		local expired = tween:update(dt)
-		if expired then
-			table.remove(self.tweens, getIndex(self.tweens,tween))
+	for i=1,#self.tweens do
+		local tween = self.tweens[i]
+		if tween then
+		    local expired = tween:update(dt)
+			if expired then
+				table.remove(self.tweens, getIndex(self.tweens, tween))
+			end
 		end
 	end
 end
@@ -84,8 +93,9 @@ function Entity:draw(filter)
 	    return
 	end
 
-	for _,c in pairs(self.components) do
-		c:draw()
+	for i=1,#self.components do
+		local component = self.components[i]
+		component:draw()
 	end
 end
 

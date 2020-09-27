@@ -1,10 +1,10 @@
 local Object = require "libs.classic"
 
-local Component = Object:extend(Object)
+local Component = Object:extend()
 
 function Component:new(entity)
 	self.entity = entity
-	self.position = entity.components.position
+	self.position = entity.position
 end
 
 function Component:update(dt)

@@ -4,8 +4,9 @@ local Sprite = require "src.sprite"
 
 require "libs.TSerial"
 require "libs.misc"
+local cargo = require("libs.cargo")
 
-local Game = Object:extend(Object)
+local Game = Object:extend()
 
 local lg,lf = love.graphics,love.filesystem
 
@@ -20,9 +21,9 @@ function Game:new()
 
 	self.t = 0
 
-	self.game_states = require("libs.cargo").init('assets/states')
+	self.game_states = cargo.init('assets/states')
 
-	self.assets = require("libs.cargo").init({
+	self.assets = cargo.init({
 		dir = 'assets',
 		loaders = {
 			png = Sprite.load
@@ -31,8 +32,8 @@ function Game:new()
 
 	self.statetree = self:buildStateTree(require('assets.states.statetree'))
 
-	self.components = require("libs.cargo").init('src/components')
-	self.assetscomponents = require("libs.cargo").init('assets/components')
+	self.components = cargo.init('src/components')
+	self.assetscomponents = cargo.init('assets/components')
 
 	local prefabs = {}
 	for _,p in pairs(self.assets.prefabs()) do
@@ -129,8 +130,7 @@ end
 function Game:setWindow()
 	love.window.setMode(
 		self.settings.window.width or lg.getWidth(),
-		self.settings.window.height or lg.getHeight(),
-		{resizable=true})
+		self.settings.window.height or lg.getHeight(),{resizable=true})
 	love.window.setFullscreen(self.settings.window.fullscreen)
 end
 
