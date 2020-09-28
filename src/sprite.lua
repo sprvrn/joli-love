@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local Object = require "libs.classic"
 local anim8 = require "libs.anim8"
 

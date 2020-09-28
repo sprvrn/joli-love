@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 return {
 	write = function()
 		local savefile = {}

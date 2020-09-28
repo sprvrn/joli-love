@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local Component = require "src.components.component"
 
 local BrowserElement = Component:extend(Component)

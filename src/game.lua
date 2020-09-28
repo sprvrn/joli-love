@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local Object = require "libs.classic"
 local Scene = require "src.scene"
 local Sprite = require "src.sprite"
@@ -52,9 +58,13 @@ function Game:new()
 	self.assets.prefabs = prefabs
 
 	for name,style in pairs(require("assets.fonts.style")) do
+		local font = nil
+		if style.font and self.assets.fonts[style.font] then
+		    font = self.assets.fonts[style.font](style.size or 16)
+		end
 		self.assets.fonts[name] = {
-			font = self.assets.fonts[style.font](style.size),
-			color = style.color
+			font = font,
+			color = style.color or {1,1,1,1}
 		}
 	end
 
@@ -261,6 +271,9 @@ function Game:draw()
 		for i=#draws,1,-1 do
 			draws[i]()
 		end
+	else
+		lg.setBackgroundColor(0.3, 0.3, 0.3, 1)
+	    lg.print("joli-love ("..require("src.joli")._VERSION..") framework for love2d (no game detected)",10,10)
 	end
 
 	if self.displaydebug then

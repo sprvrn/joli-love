@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local Render = require "src.renderer"
 local reflowprint = require "libs.reflowprint.init"
 

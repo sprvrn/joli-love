@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local Object = require "libs.classic"
 local tween = require "libs.tween"
 local cron = require "libs.cron"

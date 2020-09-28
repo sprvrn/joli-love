@@ -1,3 +1,9 @@
+--[[
+joli-love
+small framework for love2d
+MIT License (see licence file)
+]]
+
 local nuklear = require "nuklear"
 local Object = require "libs.classic"
 
@@ -34,7 +40,10 @@ function GUI:update(dt)
 			ui:layoutRow('dynamic', 20, 1)
 			ui:label('Fps : '..tostring(love.timer.getFPS()))
 			ui:layoutRow('dynamic', 20, 1)
-			ui:label("State : "..tostring(game.current_state.name))
+			
+			if game.current_state then
+			    ui:label("State : "..tostring(game.current_state.name))
+			end
 			
 			for _,scene in pairs(game.scenes) do
 				if ui:treePush('tab',scene.name) then
