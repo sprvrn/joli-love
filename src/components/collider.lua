@@ -8,7 +8,7 @@ local Component = require "src.components.component"
 
 local lg = love.graphics
 
-local Collider = Component:extend(Component)
+local Collider = Component:extend()
 
 function Collider:__tostring()
 	return "collider"
@@ -83,6 +83,10 @@ end
 function Collider:update(dt)
 	self:updatePosition()
 
+	if not self.entity.scene.world:hasItem(self) then
+		return
+	end
+
 	self.entity.scene.world:update(self,self.x,self.y,self.w,self.h)
 
 	-- collision with mouse
@@ -125,6 +129,10 @@ function Collider:update(dt)
 	    self.lastframehover = false
 	end
 
+	if not self.entity.scene.world:hasItem(self) then
+		return
+	end
+
 	self.mousehover = false
 	-- end mouse
 	-- collision with entity
@@ -165,6 +173,9 @@ function Collider:draw()
 	if self.hidecollider then
 	    return
 	end
+	if not self.entity.scene.world:hasItem(self) then
+		return
+	end
 	local x,y,w,h = self.entity.scene.world:getRect(self)
 	lg.setColor(0, 1, 0, 1)
 	lg.rectangle("line", x,y,w,h)
@@ -181,7 +192,7 @@ function Collider:debugLayout(ui)
 	self.w = ui:property("Width", 1, self.w, 10000000, 1, 1)
 	self.h = ui:property("Height", 1, self.h, 10000000, 1, 1)
 	ui:layoutRow('dynamic', 20, 1)
-	self.solid = ui:checkbox("Solid", self.solid)
+	self.solid = ui:checkbox("Solid", self.solid or false)
 	ui:label("Colliding with")
 	ui:label("  up : "..tostring(self.collide.up))
 	ui:label("  down : "..tostring(self.collide.down))

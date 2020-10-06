@@ -8,16 +8,16 @@ local Component = require "src.components.component"
 
 local lvt = require "libs.lovelytiles"
 
-local TiledMap = Component:extend(Component)
+local TiledMap = Component:extend()
 
 function TiledMap:__tostring()
 	return "tiledmap"
 end
 
-function TiledMap:new(entity, mapdata, startx, starty, w, h, layers)
+function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 	TiledMap.super.new(self, entity)
 
-	self.map = lvt.new(mapdata, startx, starty, w, h, layers)
+	self.map = lvt.new(mapdata, startx, starty, w, h, layers, obj)
 
 	self.map:foreach("tile", function(map,layer,tile,x,y)
 		self.collidables = {}

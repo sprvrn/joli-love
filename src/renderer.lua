@@ -6,8 +6,6 @@ MIT License (see licence file)
 
 local Object = require "libs.classic"
 
-local nuklear = require "nuklear"
-
 local lg = love.graphics
 
 local Renderer = Object:extend()

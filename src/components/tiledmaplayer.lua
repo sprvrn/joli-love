@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local TiledMapLayer = Component:extend(Component)
+local TiledMapLayer = Component:extend()
 
 local lg = love.graphics
 

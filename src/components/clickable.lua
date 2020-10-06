@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local Clickable = Component:extend(Component)
+local Clickable = Component:extend()
 
 function Clickable:__tostring()
 	return "clickable"

@@ -19,7 +19,7 @@ end
 function SpriteRenderer:new(sprite, anim, ox, oy)
 	SpriteRenderer.super.new(self)
 
-	self.sprite = sprite
+	self.sprite = copy(sprite)
 
 	self.animToPlay = anim
 
@@ -30,7 +30,7 @@ function SpriteRenderer:new(sprite, anim, ox, oy)
 	    for name, anim in pairs(self.sprite.anims) do
 			self.sprite.anims[name] = {
 				frame_ct = anim.frame_ct,
-				a8 = anim8.newAnimation(self.sprite.grid(anim.range,anim.row), anim.duration)
+				a8 = anim8.newAnimation(self.sprite.grid(anim.range, anim.row), anim.duration or 1)
 			}
 		end
 	end

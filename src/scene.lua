@@ -66,6 +66,15 @@ function Scene:getEntityByName(name)
 		end
 	end
 end
+function Scene:getByTag(tag)
+	local r = {}
+	for _,e in pairs(self.entities) do
+		if tag == e.tag then
+			table.insert(r, e)
+		end
+	end
+	return r
+end
 
 function Scene:removeentity(entity)
 	if entity.collider and self.world then
@@ -101,16 +110,19 @@ function Scene:update(dt)
 
 		if self.world and game.settings.mouse then
 			local mx, my = camera:mousePosition()
-			local items, len = self.world:queryPoint(mx, my, function(item)
-				if tostring(item) == "collider" then
-					return true
-				end
-			end)
+			if mx and my then
+			    local items, len = self.world:queryPoint(mx, my, function(item)
+					if tostring(item) == "collider" then
+						return true
+					end
+				end)
 
-			for i=1,len do
-				local item = items[i]
-				item.mousehover = true
+				for i=1,len do
+					local item = items[i]
+					item.mousehover = true
+				end
 			end
+			
 		end
 	end
 
@@ -148,13 +160,15 @@ function Scene:particle(system,x,y,z,tag)
 	for i=1,rate do
 		local particle = self:addParticle(x,y,z,
 			system.colors[math.floor(love.math.random(1,#system.colors))],
-			love.math.random(system.lifetime[1],system.lifetime[2])
-			)
+			system.size,
+			love.math.random(system.lifetime[1],system.lifetime[2]),
+			system.text,system.style)
 		particle.entity.tag = tag
 		particle:velocityx(system.vx[1],system.vx[2],system.vx[3])
 		particle:velocityy(system.vy[1],system.vy[2],system.vy[3])
-		particle:size(system.size[1],system.size[2],system.size[3])
-
+		if system.size then
+		    particle:size(system.size[1],system.size[2],system.size[3])
+		end
 		if system.collider then
 			particle.entity:addComponent("Collider",10,10)
 		end
@@ -162,9 +176,9 @@ function Scene:particle(system,x,y,z,tag)
 	
 end
 
-function Scene:addParticle(x,y,z,color,size,exp)
+function Scene:addParticle(x,y,z,color,size,exp,text,style)
 	local particle = self:newentity("particle_entity",x,y,z)
-		:addComponent("Particle",color or {1,1,1,1},exp or 1)
+		:addComponent("Particle",color or {1,1,1,1},exp or 1,text,style)
 
 	return particle.particle
 end

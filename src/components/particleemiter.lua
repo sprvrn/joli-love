@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local ParticleEmiter = Component:extend(Component)
+local ParticleEmiter = Component:extend()
 
 function ParticleEmiter:__tostring()
 	return "particleemiter"

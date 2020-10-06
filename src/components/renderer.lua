@@ -11,7 +11,7 @@ local ShapeRenderer = require "src.shaperenderer"
 local TextRenderer = require "src.textrenderer"
 local BatchRenderer = require "src.batchrenderer"
 
-local Renderer = Component:extend(Component)
+local Renderer = Component:extend()
 
 local method = {
 	sprite = SpriteRenderer,

@@ -6,16 +6,17 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 local ShapeRenderer = require "src.shaperenderer"
+local TextRenderer = require "src.textrenderer"
 
 local lg = love.graphics
 
-local Particle = Component:extend(Component)
+local Particle = Component:extend()
 
 function Particle:__tostring()
 	return "particle"
 end
 
-function Particle:new(entity,color,exp)
+function Particle:new(entity,color,exp,t,style)
 	Particle.super.new(self,entity)
 
 	self.entity:cron("after",exp,function()
@@ -24,7 +25,11 @@ function Particle:new(entity,color,exp)
 
 	self.expire = exp
 
-	self.renderer = ShapeRenderer(color or nil,"circ","fill",size)
+	if type(t) == "string" then
+	    self.renderer = TextRenderer(t,style or "main",100,"left")
+	else
+	    self.renderer = ShapeRenderer(color or nil,"circ","fill",size)
+	end
 end
 
 function Particle:velocityx(easing,vx1,vx2)

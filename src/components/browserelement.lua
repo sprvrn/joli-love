@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local BrowserElement = Component:extend(Component)
+local BrowserElement = Component:extend()
 
 function BrowserElement:__tostring()
 	return "browserelement"

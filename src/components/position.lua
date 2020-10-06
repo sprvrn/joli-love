@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local Position = Component:extend(Component)
+local Position = Component:extend()
 
 function Position:__tostring()
 	return "position"

@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local BrowserPointer = Component:extend(Component)
+local BrowserPointer = Component:extend()
 
 function BrowserPointer:__tostring()
 	return "browserpointer"

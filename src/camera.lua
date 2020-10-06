@@ -141,8 +141,17 @@ function Camera:fadeout(duration)
 end
 
 function Camera:mousePosition()
-	return love.mouse.getX() / self.position.scalex + self.x - self.position.x / self.position.scalex,
-		   love.mouse.getY() / self.position.scaley + self.y - self.position.y / self.position.scaley
+	local mx,my = love.mouse.getX(),love.mouse.getY()
+
+	if mx > self.width * self.position.scalex or
+		 my > self.height * self.position.scaley or
+		 mx < 0 or my < 0 then
+	    return nil,nil
+	end
+
+	--print(love.mouse.getX(),love.mouse.getY())
+	return mx / self.position.scalex + self.x - self.position.x / self.position.scalex,
+		   my / self.position.scaley + self.y - self.position.y / self.position.scaley
 end
 
 function Camera:toScreen(x,y)
@@ -159,8 +168,14 @@ function Camera:debugLayout(ui)
 		    ui:label("Mouse position")
 		    ui:layoutRow('dynamic', 20, 2)
 		    local mx,my = self:mousePosition()
-		    ui:label(mx)
-		    ui:label(my)
+		    if mx and my then
+		        ui:label(mx)
+		    	ui:label(my)
+		    else
+		        ui:label("nil")
+		    	ui:label("nil")
+		    end
+		    
 		end
 		ui:layoutRow('dynamic', 20, 1)
 		ui:label("Following : "..tostring(self.following))

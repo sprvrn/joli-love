@@ -8,7 +8,7 @@ local Component = require "src.components.component"
 
 local SoundSource = require "src.soundsource"
 
-local SoundSet = Component:extend(Component)
+local SoundSet = Component:extend()
 
 function SoundSet:__tostring()
 	return "soundset"

@@ -79,11 +79,14 @@ function Game:new()
 
 	self.displaydebug = false
 	self.debug = require("src.debug")()
-	self.gui = require("src.gui")()
+	--self.gui = require("src.gui")()
 
 	for _,name in pairs(eventcall) do
 		love[name] = function(...)
-			self.gui.ui[name](self.gui.ui,...)
+			if self.gui then
+			    self.gui.ui[name](self.gui.ui,...)
+			end
+			
 		end
 	end
 
@@ -244,7 +247,10 @@ end
 function Game:update(dt)
 	self.input:update(dt)
 
-	self.gui:update(dt)
+	if self.gui then
+	    self.gui:update(dt)
+	end
+	
 
 	if self.settings.debug and self.input:pressed("displaydebug") then
 	    self.displaydebug = not self.displaydebug

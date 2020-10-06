@@ -58,7 +58,7 @@ function Sprite:new(filepath)
 					frame_ct = anim.stop - anim.start + 1,
 					range = anim.start.."-"..anim.stop,
 					row = r,
-					duration = anim.dur
+					duration = anim.dur or 1
 				}
 			end
 		end

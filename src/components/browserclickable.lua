@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Component = require "src.components.component"
 
-local BrowserClickable = Component:extend(Component)
+local BrowserClickable = Component:extend()
 
 function BrowserClickable:__tostring()
 	return "newcomponent"
