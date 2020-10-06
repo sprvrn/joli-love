@@ -4,5 +4,6 @@ return {
 		height = 600,
 		scale = 1
 	},
-	maxfps = 60
+	debug = true,
+	mouse = true
 }
