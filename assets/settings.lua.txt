@@ -5,5 +5,8 @@ return {
 		scale = 1
 	},
 	debug = true,
-	mouse = true
+	mouse = true,
+	
+	autobatch = true,
+	batchmaxsprites = 1000
 }
