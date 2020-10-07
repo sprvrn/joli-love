@@ -26,9 +26,9 @@ function Particle:new(entity,color,exp,t,style)
 	self.expire = exp
 
 	if type(t) == "string" then
-	    self.renderer = TextRenderer(t,style or "main",100,"left")
+	    self.renderer = TextRenderer(t, style or "main", 100, "left")
 	else
-	    self.renderer = ShapeRenderer(color or nil,"circ","fill",size)
+	    self.renderer = ShapeRenderer("circ", color or nil, "fill", size)
 	end
 end
 

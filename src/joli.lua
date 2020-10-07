@@ -1,5 +1,5 @@
 local joli = {
-_VERSION = '0.1',
+_VERSION = '0.2',
 _DESCRIPTION = 'small framework for love2d',
 _URL = 'https://github.com/sprvrn/joli-love',
 _LICENSE = [[
@@ -28,7 +28,16 @@ SOFTWARE.
 }
 
 function joli.new(...)
-	return require("src.game")(...)
+	game = require("src.game")(...)
+	game:start()
+
+	love.update = function(dt)
+		game:update(dt)
+	end
+
+	love.draw = function()
+		game:draw()
+	end
 end
 
 return joli

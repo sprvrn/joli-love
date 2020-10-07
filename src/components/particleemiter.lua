@@ -29,7 +29,7 @@ function ParticleEmiter:addSystem(system,mode,delay)
 
 	local emit = function()
 		local x,y,z = self.position:get()
-		self.entity.scene:particle(system,x,y,z)
+		self.entity.scene:particle(system,x,y,z,self.entity.layer.name)
 	end
 
 	if mode == "every" then

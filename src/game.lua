@@ -79,14 +79,13 @@ function Game:new()
 
 	self.displaydebug = false
 	self.debug = require("src.debug")()
-	--self.gui = require("src.gui")()
+	self.gui = require("src.gui")()
 
 	for _,name in pairs(eventcall) do
 		love[name] = function(...)
 			if self.gui then
 			    self.gui.ui[name](self.gui.ui,...)
 			end
-			
 		end
 	end
 
@@ -97,8 +96,8 @@ function Game:getComponent(name)
 	return self.components[name] or self.assetscomponents[name]
 end
 
-function Game:newscene(name)
-	local newScene = Scene(name)
+function Game:newscene(name, ...)
+	local newScene = Scene(name, ...)
 	self.scenes[name] = newScene
 	self[name] = newScene
 	return newScene
@@ -157,7 +156,7 @@ function Game:buildStateTree(state,parent)
 				name = name,
 				methods = self.assets.states[name],
 				parent = parent,
-				childs = self:buildStateTree(s),
+				--childs = self:buildStateTree(s),
 				pause = false,
 				hide = false
 			}
@@ -251,7 +250,6 @@ function Game:update(dt)
 	    self.gui:update(dt)
 	end
 	
-
 	if self.settings.debug and self.input:pressed("displaydebug") then
 	    self.displaydebug = not self.displaydebug
 	end

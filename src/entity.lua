@@ -16,12 +16,13 @@ function Entity:__tostring()
 	return "entity:"..self.name
 end
 
-function Entity:new(name, x, y, z, r, sx, sy, tag)
-	assert(type(name) == "string","Entity name must be a string (was "..type(name)..")")
+function Entity:new(name, x, y, z, layer, tag)
+	assert(type(name) == "string", "Entity name must be a string (was "..type(name)..")")
 
 	self.name = name
 
 	self.tag = tag
+	self.layer = layer
 	self.components = {}
 
 	self.tweens = {}
@@ -39,7 +40,7 @@ function Entity:addComponent(name, ...)
 	name = string.lower(name)
 	local comp = game:getComponent(name)
 	if not comp then
-	    print("Warning, fail to add <"..name.."> component : does not exists. ("..self.name..")")
+	    print("Warning, fail to add <"..name.."> component : does not exists. (entity : "..self.name..")")
 	    return self
 	end
 

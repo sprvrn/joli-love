@@ -48,8 +48,7 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 					c1.height = o.height
 
 					self:addCollidable(c1)
-				end
-								
+				end			
 			end
 			else
 				if (layer.properties and layer.properties.collidable) or
@@ -65,29 +64,30 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 	local l = 0
 
 	if self.map.backgroundcolor then
-		scene:newentity("backgroundcolor",x,y,z-0.1)
-			:addComponent("renderer","shape",self.map.backgroundcolor,"rect","fill",
+		scene:newentity("backgroundcolor",x,y,z-0.1,"backgroundcolor")
+			:addComponent("Renderer","rect",self.map.backgroundcolor,"fill",
 				self.map.tilewidth * self.map.mapWidth,
 				self.map.tileheight * self.map.mapHeight)
 	end
 
 	for _,layer in pairs(self.map.layers) do
 		if layer.type == "tilelayer" or layer.type == "imagelayer" then
-			scene:newentity(layer.name,x,y,z + l)
+			scene:newentity(layer.name,x,y,z + l,layer.name)
 				:addComponent("tiledmaplayer", layer)
-				if layer.tiles then
-				for x,t in pairs(layer.tiles) do
-						for y,tile in pairs(t) do
-							if tile.data then
-								if type(tile.data.type) == "string" then
-									self.entity.scene:initPrefab(
-										game.assets.prefabs[tile.data.properties.name],
-										tile.data.properties.name,
-										(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,z+l,
-										tile
-									)
-									layer:removeTile(x,y)
-									--[[local objData = MapObject:get(tile.data.properties.item)
+			if layer.tiles then
+			for x,t in pairs(layer.tiles) do
+				for y,tile in pairs(t) do
+					if tile.data then
+						if type(tile.data.type) == "string" and tile.data.type == "entity" then
+							self.entity.scene:initPrefab(
+								tile.data.properties.name,
+								tile.data.properties.name,
+								(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,z+l,
+								tile,
+								layer.name
+							)
+							layer:removeTile(x,y)
+							--[[local objData = MapObject:get(tile.data.properties.item)
 									if objData then
 										local obj = MapObject(self,objData,(x-1)*self.map.tilewidth,
 										(y-1)*self.map.tileheight,16,16)
@@ -109,19 +109,20 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 
 										
 									end]]
-								end
 							end
 						end
 					end
+				end
 			end
 		elseif layer.type == "objectgroup" then
 			for _,obj in pairs(layer.objects) do
 				if obj.type == "entity" then
 					scene:initPrefab(
-						game.assets.prefabs[obj.name],
+						obj.name,
 						obj.name,
 						obj.x+x,obj.y+y,z+l,
-						obj
+						obj,
+						layer.name
 					)  
 				end
 			end
@@ -129,9 +130,6 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 		l = l + 1
 	end
 	
-
-	--self:initCollidables()
-
 	local tw,th = self.map.tilewidth,self.map.tileheight
 	local camera = self.entity.scene.cameras.main
 
@@ -146,57 +144,6 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 end
 
 function TiledMap:update( dt )
-end
-
-function TiledMap:initCollidables()
-	self.collidables = {}
-	
-	if not self.entity.scene.world then
-		self.entity.scene:createPhysicWorld()
-	end
-
-	local world = self.entity.scene.world
-	local px, py = self.position:get()
-
-	for _,layer in pairs(self.map.layers) do
-		if layer.tiles then
-			for x,t in pairs(layer.tiles) do
-				for y,tile in pairs(t) do
-					if tile.tileset ~= nil then
-						local tileset = tile.tileset
-						local c = {
-							type = "wall",
-							solid = true,
-							x = (x - 1) * tileset.tilewidth + px,
-							y = (y - 1) * tileset.tileheight + py,
-							width = tileset.tilewidth,
-							height = tileset.tileheight
-						}
-						if tile.data.objectGroup and tile.data.objectGroup.objects then
-							for _,o in pairs(tile.data.objectGroup.objects) do
-								if (layer.properties and layer.properties.collidable) or
-									(o.properties and o.properties.collidable) then
-									local c1 = copy(c)
-									c1.x = c1.x + o.x
-									c1.y = c1.y + o.y
-									c1.width = o.width
-									c1.height = o.height
-
-									self:addCollidable(c1)
-								end
-								
-							end
-						else
-							if (layer.properties and layer.properties.collidable) or
-								(tile.properties and tile.properties.collidable) then
-							self:addCollidable(c)
-							end
-						end
-					end
-				end
-			end
-		end
-	end
 end
 
 function TiledMap:addCollidable(c)

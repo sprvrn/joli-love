@@ -7,18 +7,27 @@ MIT License (see licence file)
 local Object = require "libs.classic"
 local Camera = require "src.camera"
 local Entity = require "src.entity"
+local Layer = require "src.layer"
 local bump = require "libs.bump"
 
 local lg = love.graphics
 
-local Scene = Entity:extend(Entity)
+local Scene = Entity:extend()
 
-function Scene:new(name)
+function Scene:new(name, layers)
 	Scene.super.new(self,name)
 
 	self.cameras = {}
 
 	self.entities = {}
+
+	--self.batches = {}
+
+	self.layers = {}
+	local layers = layers or {}
+	for i=1,#layers do
+		table.insert(self.layers, Layer(layers[i]))
+	end
 
 	self.world = nil
 
@@ -39,6 +48,9 @@ function Scene:newentity(name, ...)
 
 	local newEntity = Entity(name, ...)
 	newEntity.scene = self
+	if newEntity.layer then
+	    newEntity.layer = self:getLayer(newEntity.layer)
+	end
 	if self[name] then
 		--print("Warning : an entity named " .. name .. " already exists.")
 	end
@@ -51,11 +63,35 @@ function Scene:newentity(name, ...)
 	return newEntity
 end
 
-function Scene:initPrefab(prefab, ...)
-	if type(prefab) == "function" then
-		return prefab(self, ...)
+function Scene:initPrefab(prefabname, ...)
+	local prefabcall = game.assets.prefabs[prefabname]
+	if type(prefabcall) == "function" then
+		return prefabcall(self, ...)
 	else
-		print("Warning : a prefab couldn't be loaded.")
+		print("Warning : <"..prefabname.."> prefab does not exists.")
+	end
+end
+
+function Scene:getLayer(layer)
+	for i=1,#self.layers do
+		if self.layers[i].name == layer then
+		    return self.layers[i]
+		end
+	end
+end
+
+function Scene:setLayerOption(name, options)
+	local layer = self:getLayer(name)
+	for label,val in pairs(options) do
+		layer[label] = val
+	end
+end
+
+function Scene:setLayer(layers)
+	self.layers = {}
+	local layers = layers or {}
+	for name,layer in paris(layers) do
+		table.insert(self.layers, Layer(name,layer.autobatch))
 	end
 end
 
@@ -66,11 +102,25 @@ function Scene:getEntityByName(name)
 		end
 	end
 end
+
 function Scene:getByTag(tag)
 	local r = {}
 	for _,e in pairs(self.entities) do
 		if tag == e.tag then
 			table.insert(r, e)
+		end
+	end
+	return r
+end
+
+function Scene:getByLayer(name)
+	local r = {}
+	for i=1,#self.entities do
+		local e = self.entities[i]
+		if e.layer then
+		    if name == e.layer.name then
+				table.insert(r, e)
+			end
 		end
 	end
 	return r
@@ -122,7 +172,6 @@ function Scene:update(dt)
 					item.mousehover = true
 				end
 			end
-			
 		end
 	end
 
@@ -130,6 +179,28 @@ function Scene:update(dt)
 		local entity = self.entities[i]
 		if entity then
 		    entity:update(dt)
+		end
+	end
+end
+
+function Scene:draw()
+	for i=1,#self.layers do
+		local layer = self.layers[i]
+		for b=1,#layer.batches do
+			layer.batches[b]:clear()
+		end
+
+		local entities = self:getByLayer(layer.name)
+		for e=1,#entities do
+			local entity = entities[e]
+			if entity then
+			    entity:draw()
+			end
+		end
+
+		--print(layer.name,#entities,#layer.batches)
+		for b=1,#layer.batches do
+			love.graphics.draw(layer.batches[b], 0, 0)
 		end
 	end
 end
@@ -155,7 +226,7 @@ function Scene:drawentities(tags,mode)
 	end
 end
 
-function Scene:particle(system,x,y,z,tag)
+function Scene:particle(system,x,y,z,layer)
 	local rate = system.rate or 1
 	for i=1,rate do
 		local particle = self:addParticle(x,y,z,
@@ -163,7 +234,7 @@ function Scene:particle(system,x,y,z,tag)
 			system.size,
 			love.math.random(system.lifetime[1],system.lifetime[2]),
 			system.text,system.style)
-		particle.entity.tag = tag
+		particle.entity.layer = self:getLayer(layer)
 		particle:velocityx(system.vx[1],system.vx[2],system.vx[3])
 		particle:velocityy(system.vy[1],system.vy[2],system.vy[3])
 		if system.size then
@@ -184,19 +255,17 @@ function Scene:addParticle(x,y,z,color,size,exp,text,style)
 end
 
 function Scene:setPause(pause)
-	--if pause then
-		self.pause = pause
-		for _,e in pairs(self.entities) do
-			local set = e:getComponent("SoundSet")
-			if set then
-				if pause then
-					set:pause()
-				else
-					set:resume()
-				end
+	self.pause = pause
+	for _,e in pairs(self.entities) do
+		local set = e:getComponent("SoundSet")
+		if set then
+			if pause then
+				set:pause()
+			else
+				set:resume()
 			end
 		end
-	--end
+	end
 end
 
 return Scene

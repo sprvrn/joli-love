@@ -10,13 +10,13 @@ local Sprite = require "src.sprite"
 
 local lg = love.graphics
 
-local SpriteRenderer = Render:extend(Render)
+local SpriteRenderer = Render:extend()
 
 function SpriteRenderer:__tostring()
 	return "spriterenderer"
 end
 
-function SpriteRenderer:new(sprite, anim, ox, oy)
+function SpriteRenderer:new(sprite, anim, ox, oy, flipx, flipy)
 	SpriteRenderer.super.new(self)
 
 	self.sprite = copy(sprite)
@@ -26,8 +26,11 @@ function SpriteRenderer:new(sprite, anim, ox, oy)
 	self.ox = ox or 0
 	self.oy = oy or 0
 
+	self.flipx = flipx or false
+	self.flipy = flipy or false
+
 	if self.sprite.anims then
-	    for name, anim in pairs(self.sprite.anims) do
+		for name, anim in pairs(self.sprite.anims) do
 			self.sprite.anims[name] = {
 				frame_ct = anim.frame_ct,
 				a8 = anim8.newAnimation(self.sprite.grid(anim.range, anim.row), anim.duration or 1)
@@ -42,17 +45,34 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 	local x, y, z, r, sx, sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
 
+	if self.flipx then
+		local osx = sx
+	    sx = sx - sx * 2
+	    x = x + self.sprite.size.w * osx
+	end
+
+	if self.flipy then
+		local osy = sy
+	    sy = sy - sy * 2
+	    y = y + self.sprite.size.h * osy
+	end
+
 	if self.animToPlay then
 		local anim = self.sprite.anims[self.animToPlay] 
 		if anim then
-		    anim.a8:draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
+			if not position.entity.layer.autobatch then
+				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
+			else
+				position.entity.layer:getBatch(self.sprite)
+					:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+			end
 		end
 	else
-	    lg.draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
+		lg.draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
 	end
 
 	if self.tint then
-	    lg.setColor(1,1,1,1)
+		lg.setColor(1,1,1,1)
 	end
 end
 
@@ -60,7 +80,7 @@ function SpriteRenderer:update(dt)
 	if self.animToPlay then
 		local anim = self.sprite.anims[self.animToPlay] 
 		if anim then
-		    anim.a8:update(dt)
+			anim.a8:update(dt)
 		end
 	end
 end
@@ -69,14 +89,14 @@ function SpriteRenderer:setAnim(name, t, dur)
 	local anim = self.sprite.anims[name]
 	if anim ~= nil then
 		if dur == nil then
-		    dur = anim.a8.totalDuration
+			dur = anim.a8.totalDuration
 		else
-	    	anim.a8.totalDuration = dur / anim.frame_ct
+			anim.a8.totalDuration = dur / anim.frame_ct
 		end
 
 		anim.a8.status = "playing"
 		if t == "once" then
-		    anim.a8.onLoop = 'pauseAtEnd'
+			anim.a8.onLoop = 'pauseAtEnd'
 		end
 		anim.a8:gotoFrame(1)
 

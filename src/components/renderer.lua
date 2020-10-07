@@ -13,35 +13,83 @@ local BatchRenderer = require "src.batchrenderer"
 
 local Renderer = Component:extend()
 
-local method = {
-	sprite = SpriteRenderer,
-	text = TextRenderer,
-	shape = ShapeRenderer,
-	batch = BatchRenderer
-}
-
 function Renderer:__tostring()
 	return "renderer"
 end
 
-function Renderer:new(entity, type, ...)
+function Renderer:new(entity, ...)
 	Renderer.super.new(self, entity)
-	self.rendertype = type
-	self.render = method[type](...)
+
+	self.list = {}
+	self.order = {}
+
+	local args = {...}
+
+	if #args > 0 then
+		self:add("default", ...)
+	end
+end
+
+function Renderer:add(name, ...)
+	assert(type(name)=="string")
+
+	local args = {...}
+
+	if not table.contains(self.order,name) then
+	    table.insert(self.order, name)
+	end
+
+	if tostring(args[1]) == "sprite" then
+		self.list[name] = SpriteRenderer(...)
+	elseif type(args[1]) == "string" then
+		if args[1] == "rect" or args[1] == "circ" or args[1] == "line" then
+			self.list[name] = ShapeRenderer(...)
+		else
+			self.list[name] = TextRenderer(...)
+		end
+	end
+	-- TODO batch renderer
+end
+
+function Renderer:get(name)
+	
+end
+
+function Renderer:setOrder(...)
+	local o = {}
+	for _,name in pairs({...}) do
+		if type(name) == "string" then
+		    table.insert(o, name)
+		end
+	end
+	self.order = o
 end
 
 function Renderer:draw()
-	self.render:draw(self.position)
+	for i=1,#self.order do
+		local render = self.list[self.order[i]]
+		if render then
+			render:draw(self.position)
+		end
+	end
 end
 
 function Renderer:update( dt )
-	self.render:update(dt)
+	for i=1,#self.order do
+		local render = self.list[self.order[i]]
+		if render then
+			render:update(dt)
+		end
+	end
 end
 
-function Renderer:debugLayout(ui)
-	ui:layoutRow('dynamic', 20, 1)
-	ui:label(tostring(self.render))
-	self.render:debugLayout(ui)
-end
+--function Renderer:debugLayout(ui)
+	--ui:layoutRow('dynamic', 20, 1)
+	--ui:label(tostring(self.render))
+	--if self.render then
+	--    self.render:debugLayout(ui)
+	--end
+	
+--end
 
 return Renderer

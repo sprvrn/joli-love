@@ -19,7 +19,7 @@ function ShapeRenderer:__tostring()
 	return "shaperenderer"
 end
 
-function ShapeRenderer:new(color, type, mode, arg1, arg2)
+function ShapeRenderer:new(type, color, mode, arg1, arg2)
 	ShapeRenderer.super.new(self)
 
 	self.type = type

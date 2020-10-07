@@ -39,6 +39,8 @@ function Sprite:new(filepath)
 
 	self.path = filepath
 
+	self.size = { w=self.image:getWidth(), h=self.image:getHeight() }
+
 	if img then
 	    sprWidth = img.spriteW or 0
 		sprHeight = img.spriteH or 0
@@ -53,12 +55,15 @@ function Sprite:new(filepath)
 		if img.anims then
 			for name,anim in pairs(img.anims) do
 				local r = 1
+				anim.start = anim.start or 1
+				anim.stop = anim.stop or anim.start
+				anim.dur = anim.dur or 1
 				self.anims[name] = {
 					name = name,
 					frame_ct = anim.stop - anim.start + 1,
 					range = anim.start.."-"..anim.stop,
 					row = r,
-					duration = anim.dur or 1
+					duration = anim.dur
 				}
 			end
 		end
