@@ -161,6 +161,9 @@ end
 function Camera:debugLayout(ui)
 	if ui:treePush('node',self.name) then
 		ui:layoutRow('dynamic', 20, 2)
+		self.position.x = ui:property("position x", -10000000, self.position.x, 10000000, 1, 1)
+		self.position.y = ui:property("position y", -10000000, self.position.y, 10000000, 1, 1)
+		ui:layoutRow('dynamic', 20, 2)
 		self.x = ui:property("x", -10000000, self.x, 10000000, 1, 1)
 		self.y = ui:property("y", -10000000, self.y, 10000000, 1, 1)
 		if game.settings.mouse then

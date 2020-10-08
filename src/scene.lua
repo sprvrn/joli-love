@@ -87,11 +87,12 @@ function Scene:setLayerOption(name, options)
 	end
 end
 
-function Scene:setLayer(layers)
+function Scene:setLayers(layers)
 	self.layers = {}
 	local layers = layers or {}
-	for name,layer in paris(layers) do
-		table.insert(self.layers, Layer(name,layer.autobatch))
+	for i=1,#layers do
+		local layer = layers[i]
+		table.insert(self.layers, Layer(layer.name,layer.autobatch))
 	end
 end
 
@@ -136,6 +137,10 @@ end
 
 function Scene:addCamera(name,...)
 	self.cameras[name] = Camera(self,name,...)
+end
+
+function Scene:mainCamera()
+	return self.cameras.main
 end
 
 function Scene:createPhysicWorld()
@@ -229,16 +234,25 @@ end
 function Scene:particle(system,x,y,z,layer)
 	local rate = system.rate or 1
 	for i=1,rate do
+		local rndcolor = nil
+		if system.colors then
+		    rndcolor = system.colors[math.floor(love.math.random(1,#system.colors))]
+		end
 		local particle = self:addParticle(x,y,z,
-			system.colors[math.floor(love.math.random(1,#system.colors))],
+			rndcolor,
 			system.size,
 			love.math.random(system.lifetime[1],system.lifetime[2]),
-			system.text,system.style)
+			system.text or system.sprite,system.options)
+
 		particle.entity.layer = self:getLayer(layer)
 		particle:velocityx(system.vx[1],system.vx[2],system.vx[3])
 		particle:velocityy(system.vy[1],system.vy[2],system.vy[3])
+
 		if system.size then
 		    particle:size(system.size[1],system.size[2],system.size[3])
+		end
+		if system.alpha then
+		    particle:alpha(system.alpha[1],system.alpha[2],system.alpha[3])
 		end
 		if system.collider then
 			particle.entity:addComponent("Collider",10,10)
@@ -247,9 +261,9 @@ function Scene:particle(system,x,y,z,layer)
 	
 end
 
-function Scene:addParticle(x,y,z,color,size,exp,text,style)
+function Scene:addParticle(x,y,z,color,size,exp,type,options)
 	local particle = self:newentity("particle_entity",x,y,z)
-		:addComponent("Particle",color or {1,1,1,1},exp or 1,text,style)
+		:addComponent("Particle",color or {1,1,1,1},exp or 1,type,options)
 
 	return particle.particle
 end

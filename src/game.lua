@@ -33,7 +33,7 @@ function Game:new()
 	self.assets = cargo.init({
 		dir = 'assets',
 		loaders = {
-			png = Sprite.load
+			png = Sprite
 		}
 	})
 
@@ -156,7 +156,6 @@ function Game:buildStateTree(state,parent)
 				name = name,
 				methods = self.assets.states[name],
 				parent = parent,
-				--childs = self:buildStateTree(s),
 				pause = false,
 				hide = false
 			}
@@ -170,14 +169,14 @@ function Game:state()
 	return self.current_state
 end
 
-function Game:stateUpdate(state,dt)
+--[[function Game:stateUpdate(state,dt)
 	if state.update then
 	    state.update(dt)
 	    if state.parent then
 	        self:stateUpdate(state.parent,dt)
 	    end
 	end
-end
+end]]
 
 function Game:stateUpdate(state,dt)
 	if state.methods.update then

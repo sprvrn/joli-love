@@ -5,7 +5,7 @@ MIT License (see licence file)
 ]]
 
 local Render = require "src.renderer"
-local reflowprint = require "libs.reflowprint.init"
+local reflowprint = require "libs.reflowprint"
 
 local lg = love.graphics
 
@@ -15,15 +15,19 @@ function TextRenderer:__tostring()
 	return "textrenderer"
 end
 
-function TextRenderer:new(text,style,width,align)
-	TextRenderer.super.new(self)
+function TextRenderer:new(text,style,width,align,ox,oy)
+	TextRenderer.super.new(self, nil, ox, oy)
+
+	style = style or "main"
 
 	self.text = tostring(text)
 	self.width = width or game.assets.settings.canvas.width
-	self.style = game.assets.fonts[style] or game.assets.fonts.main
+	self.style = game.assets.fonts[style]
 	self.tint = self.style.color or {1,1,1,1}
 	self.align = align or "left"
 	self.progress = 1
+
+	self.rendertype = "text"
 end
 
 function TextRenderer:setStyle(name)
@@ -38,7 +42,11 @@ function TextRenderer:draw(position,ox,oy)
 	local x,y,z,r,sx,sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
 	lg.setFont(self.style.font)
+
+	lg.push()
+	lg.scale(sx, sy)
 	reflowprint(self.progress,self.text,x,y,self.width,self.align)
+	lg.pop()
 
 	if self.tint then
 	    lg.setColor(1,1,1,1)

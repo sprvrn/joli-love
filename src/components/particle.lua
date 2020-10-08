@@ -5,8 +5,6 @@ MIT License (see licence file)
 ]]
 
 local Component = require "src.components.component"
-local ShapeRenderer = require "src.shaperenderer"
-local TextRenderer = require "src.textrenderer"
 
 local lg = love.graphics
 
@@ -16,7 +14,7 @@ function Particle:__tostring()
 	return "particle"
 end
 
-function Particle:new(entity,color,exp,t,style)
+function Particle:new(entity,color,exp,particletype,options)
 	Particle.super.new(self,entity)
 
 	self.entity:cron("after",exp,function()
@@ -25,11 +23,27 @@ function Particle:new(entity,color,exp,t,style)
 
 	self.expire = exp
 
-	if type(t) == "string" then
-	    self.renderer = TextRenderer(t, style or "main", 100, "left")
+	options = options or {}
+
+	if type(particletype) == "string" then
+		self.entity:addComponent("Renderer",
+			particletype,
+			options.style or "main",
+			options.width or 100,
+			options.align or "left")
+		if color then
+		    self.entity.renderer:get("default").tint = color
+		end
+	elseif tostring(particletype) == "sprite" then
+		self.entity:addComponent("Renderer",particletype,options.anim,0,0,options.flipx,options.flipy)
+		if color then
+		    self.entity.renderer:get("default").tint = color
+		end
 	else
-	    self.renderer = ShapeRenderer("circ", color or nil, "fill", size)
+		self.entity:addComponent("Renderer","circ", color or nil, "fill", size)
 	end
+
+	self.render = self.entity.renderer:get("default")
 end
 
 function Particle:velocityx(easing,vx1,vx2)
@@ -44,25 +58,36 @@ function Particle:velocityy(easing,vy1,vy2)
 	self.entity:tween(self.expire,{y = self.position.y + love.math.random(vy1,vy2)},easing or 'linear',self.position)
 end
 
-function Particle:size(startsize,endsize,easing)
-	self.renderer.arg1 = startsize
-	if endsize then
-	    self.entity:tween(self.expire,{arg1 = endsize},easing or 'linear', self.renderer)
+function Particle:size(easing,startsize,endsize)
+	if self.render.rendertype == "shape" then
+	    self.render.arg1 = startsize
+		if endsize then
+			self.entity:tween(self.expire,{arg1 = endsize},easing or 'linear', self.render)
+		end
+	elseif self.render.rendertype == "sprite" or self.render.rendertype == "text" then
+	    self.position.scalex = startsize
+	    self.position.scaley = startsize
+		if endsize then
+			self.entity:tween(self.expire,{scalex = endsize,scaley = endsize},easing or 'linear', self.position)
+		end
+	end
+end
+
+function Particle:alpha(easing,s,e)
+	if not self.render.tint then
+	    self.render.tint = {1,1,1,s}
+	    self.render.alpha = s
+	else
+	    self.render.tint = {self.render.tint[1],self.render.tint[2],self.render.tint[3],s}
+	    self.render.alpha = s
+	end
+	if e then
+		self.entity:tween(self.expire,{alpha = e},easing or 'linear', self.render)
 	end
 end
 
 function Particle:update(dt)
 	
-end
-
-function Particle:draw()
-	self.renderer:draw(self.position)
-end
-
-function Particle:debugLayout(ui)
-	ui:layoutRow('dynamic', 20, 1)
-	ui:label("Expire : " .. tostring(self.expire))
-	self.renderer:debugLayout(ui)
 end
 
 return Particle

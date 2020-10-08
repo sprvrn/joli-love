@@ -29,9 +29,9 @@ function BrowserElement:new(entity,data,browser)
 	self.disablestyle = data.disablestyle
 
 	if data.sprite then
-	    self.entity:addComponent("Renderer","sprite",data.sprite)
+	    self.entity:addComponent("Renderer",data.sprite)
 	elseif type(self.label) == "string" then
-		self.entity:addComponent("Renderer","text",self.label,data.style,data.width,data.align or "left")
+		self.entity:addComponent("Renderer",self.label,data.style,data.width,data.align or "left")
 	end
 
 	self.entity:addComponent("SoundSet")

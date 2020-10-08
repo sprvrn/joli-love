@@ -21,6 +21,8 @@ function SpriteRenderer:new(sprite, anim, ox, oy, flipx, flipy)
 
 	self.sprite = copy(sprite)
 
+	self.rendertype = "sprite"
+
 	self.animToPlay = anim
 
 	self.ox = ox or 0

@@ -23,6 +23,8 @@ function BatchRenderer:new(batch)
 	BatchRenderer.super.new(self)
 
 	self.batch = batch
+
+	self.rendertype = "batch"
 end
 
 function BatchRenderer:draw(position,ox,oy)

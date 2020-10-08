@@ -3,17 +3,13 @@ joli-love
 small framework for love2d
 MIT License (see licence file)
 ]]
-
+local json = require "libs.json"
 local Object = require "libs.classic"
 local anim8 = require "libs.anim8"
 
-local lg = love.graphics
+local lg, lf = love.graphics, love.filesystem
 
 local Sprite = Object:extend()
-
-function Sprite.load(img)
-	return Sprite(img)
-end
 
 function Sprite.get(file)
 	local f = strsplit(file,"/")
@@ -35,11 +31,54 @@ function Sprite:new(filepath)
 	local img = Sprite.get(filepath)
 
 	self.image = lg.newImage(filepath)
+
+	local p = strsplit(filepath, ".")
+	local jsonfile = p[1]..".json"
+
+	local n = strsplit(p[1],"/")
+	self.name = n[#n]
+
 	self.image:setFilter('nearest', 'nearest')
 
 	self.path = filepath
 
 	self.size = { w=self.image:getWidth(), h=self.image:getHeight() }
+
+	if lf.getInfo(jsonfile) then
+	    local data = json.decode(lf.read(jsonfile))
+
+	    if data.meta.app == "http://www.aseprite.org/" then
+	        self.grid = {}
+			self.anims = {}
+			self.size = { w=data.frames[1].sourceSize.w, h=data.frames[1].sourceSize.h }
+
+			if sprWidth ~= 0 and sprHeight ~= 0 then
+			    self.grid = anim8.newGrid(self.size.w, self.size.h, data.meta.size.w, data.meta.size.h)
+			end
+
+			for i=1,#data.meta.frameTags do
+				local a = data.meta.frameTags[i]
+
+				a.from = a.from + 1
+				a.to = a.to + 1
+
+				local durations = {}
+
+				for i=a.from,a.to do
+					table.insert(durations, data.frames[i].duration / 1000)
+				end
+
+				self.anims[a.name] = {
+					name = a.name,
+					x = data.frames[i].frame.x, y = data.frames[i].frame.y,
+					frame_ct = a.to - a.from + 1,
+					range = a.from.."-"..a.to,
+					row = 1,
+					duration = durations
+				}
+			end
+	    end
+	end
 
 	if img then
 	    sprWidth = img.spriteW or 0

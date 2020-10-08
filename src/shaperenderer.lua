@@ -22,6 +22,8 @@ end
 function ShapeRenderer:new(type, color, mode, arg1, arg2)
 	ShapeRenderer.super.new(self)
 
+	self.rendertype = "shape"
+
 	self.type = type
 	self.mode = mode or "fill"
 	self.arg1 = arg1

@@ -52,7 +52,7 @@ function Renderer:add(name, ...)
 end
 
 function Renderer:get(name)
-	
+	return self.list[name]
 end
 
 function Renderer:setOrder(...)

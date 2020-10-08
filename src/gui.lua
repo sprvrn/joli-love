@@ -35,14 +35,14 @@ function GUI:update(dt)
 	local ui = self.ui
 	
 	ui:frameBegin()
-	if ui:windowBegin('Debug', 200, 0, 400, 800, 'title', 'movable', 'scrollbar') then
+	if ui:windowBegin('Debug', 200, 0, 400, game.settings.canvas.height*game.settings.canvas.scale, 'title', 'movable', 'scrollbar') then
 		--ui:groupBegin("debugwindow",'title','border') 
 			ui:layoutRow('dynamic', 20, 1)
 			ui:label('Fps : '..tostring(love.timer.getFPS()))
-			ui:layoutRow('dynamic', 20, 1)
-			
+			ui:layoutRow('dynamic', 20, 2)
+			ui:label("State")
 			if game.current_state then
-			    ui:label("State : "..tostring(game.current_state.name))
+			    ui:label(game.current_state.name)
 			end
 			
 			for _,scene in pairs(game.scenes) do
@@ -66,12 +66,13 @@ function GUI:update(dt)
 							--ui:label("tween # " .. tostring(#e.tweens))
 							--ui:layoutRow('dynamic', 20, 1)
 							for _,c in pairs(e.components) do
-								ui:layoutRow('dynamic', 175, 1)
-								if ui:groupBegin(tostring(c), 'title','border','scrollbar') then
+								--ui:layoutRow('dynamic', 175, 1)
+								if ui:treePush('tab',tostring(c)) then
+								--if ui:groupBegin(tostring(c), 'title','border','scrollbar') then
 									c:debugLayout(ui)
-									ui:groupEnd()
+									--ui:groupEnd()
+									ui:treePop()
 								end
-								
 							end
 							ui:treePop()
 						end

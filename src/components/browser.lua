@@ -32,7 +32,7 @@ function Browser:setList(...)
 		end
 		local prv = i-1
 		if prv < 1 then
-		    prv = #t
+			prv = #t
 		end
 		element.activationKey = self.activationKey
 		local entityelement = scene:newentity(
@@ -42,7 +42,7 @@ function Browser:setList(...)
 			element.position.z)
 			:addComponent("BrowserElement",element,self)
 		if type(self.navkeys) == "table" then
-		    entityelement:getComponent("browserelement"):add(self.navkeys[1],nxt)
+			entityelement:getComponent("browserelement"):add(self.navkeys[1],nxt)
 			entityelement:getComponent("browserelement"):add(self.navkeys[2],prv)
 		end
 		
@@ -50,7 +50,7 @@ function Browser:setList(...)
 	end
 	
 	if #self.list >= 1 then
-	    self:setCurrent(self.list[1])
+		self:setCurrent(self.list[1])
 	end
 end
 
@@ -69,9 +69,7 @@ function Browser:setPointer(ox,oy,...)
 
 	local args = {...}
 	if #args > 0 then
-	    if args[1] == "shape" or args[1] == "sprite" then
-	        entitypointer:addComponent("Renderer", ...)
-	    end
+		entitypointer:addComponent("Renderer", ...)  
 	end
 end
 
@@ -84,11 +82,9 @@ function Browser:clickable()
 end
 
 function Browser:setCurrent(element)
-	if self.current and self.current.entity:getComponent("Renderer") then
-		local render = self.current.entity:getComponent("Renderer")
-		if render.rendertype == "text" then
-	    render.render:setStyle(self.current.style)
-		end
+	if self.current and self.current.entity.renderer then
+		local render = self.current.entity.renderer
+		render:get("default"):setStyle(self.current.style)
 	end
 	
 	self.current = element
@@ -100,17 +96,15 @@ function Browser:setCurrent(element)
 		end
 	end
 
-	if self.current.entity:getComponent("Renderer") then
-		local render = self.current.entity:getComponent("Renderer")
-		if render.rendertype == "text" then
-	    render.render:setStyle(self.current.hoverstyle or self.current.style)
-		end
+	if self.current.entity.renderer then
+		local render = self.current.entity.renderer
+		render:get("default"):setStyle(self.current.hoverstyle or self.current.style or "main")
 	end
 end
 
 function Browser:update(dt)
 	if tostring(self.current) == "browserelement" then
-	    self.current:updateElement(dt,self)
+		self.current:updateElement(dt,self)
 	end
 end
 
