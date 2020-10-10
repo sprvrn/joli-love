@@ -150,6 +150,7 @@ function Scene:createPhysicWorld()
 end
 
 function Scene:addCollider(item)
+	self:createPhysicWorld()
 	self.world:add(item, item.x, item.y, item.w, item.h)
 end
 
@@ -189,6 +190,9 @@ function Scene:update(dt)
 end
 
 function Scene:draw()
+	if self.hide then
+	    return
+	end
 	for i=1,#self.layers do
 		local layer = self.layers[i]
 		for b=1,#layer.batches do
