@@ -19,7 +19,8 @@ local lg,lf = love.graphics,love.filesystem
 
 local eventcall = {"keypressed","keyreleased","mousepressed","mousereleased","mousemoved","textinput","wheelmoved"}
 
-function Game:new()
+function Game:new(version)
+	self.joliversion = version
 	lg.setDefaultFilter("nearest", "nearest")
 
 	self.save = require "src.savegame"

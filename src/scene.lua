@@ -21,8 +21,6 @@ function Scene:new(name, layers)
 
 	self.entities = {}
 
-	--self.batches = {}
-
 	self.layers = {}
 	local layers = layers or {}
 	for i=1,#layers do
