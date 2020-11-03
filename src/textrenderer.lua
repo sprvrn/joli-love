@@ -41,8 +41,11 @@ function TextRenderer:draw(position,ox,oy)
 
 	local x,y,z,r,sx,sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
-	lg.setFont(self.style.font)
-
+	
+	if self.style.font then
+	    lg.setFont(self.style.font)
+	end
+	
 	lg.push()
 	lg.scale(sx, sy)
 	reflowprint(self.progress,self.text,x,y,self.width,self.align)

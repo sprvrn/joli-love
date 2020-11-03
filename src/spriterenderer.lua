@@ -16,7 +16,7 @@ function SpriteRenderer:__tostring()
 	return "spriterenderer"
 end
 
-function SpriteRenderer:new(sprite, anim, ox, oy, flipx, flipy)
+function SpriteRenderer:new(sprite, anim, ox, oy, sx, sy, flipx, flipy)
 	SpriteRenderer.super.new(self)
 
 	self.sprite = copy(sprite)
@@ -30,6 +30,9 @@ function SpriteRenderer:new(sprite, anim, ox, oy, flipx, flipy)
 
 	self.flipx = flipx or false
 	self.flipy = flipy or false
+
+	self.scalex = sx or 1
+	self.scaley = sy or 1
 
 	if self.sprite.anims then
 		for name, anim in pairs(self.sprite.anims) do
@@ -46,6 +49,13 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 
 	local x, y, z, r, sx, sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
+
+	if self.scalex > 1 then
+	    sx = sx + self.scalex
+	end
+	if self.scaley > 1 then
+	    sy = sy + self.scaley
+	end
 
 	if self.flipx then
 		local osx = sx
@@ -65,8 +75,14 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 			if not position.entity.layer.autobatch then
 				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
 			else
-				position.entity.layer:getBatch(self.sprite)
-					:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				local batch = position.entity.layer:getBatch(self.sprite)
+				if self.tint then
+				    batch:setColor(self.tint)
+				end
+				batch:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				if self.tint then
+				    batch:setColor(1,1,1,1)
+				end
 			end
 		end
 	else

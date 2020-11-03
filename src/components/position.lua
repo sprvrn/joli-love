@@ -43,12 +43,18 @@ end
 
 function Position:move(x,y)
 	local collider = self.entity.collider
-	local x, y = x, y
+	local oldx, oldy = x, y
 	if collider then
 	    x, y = collider:move(x, y)
 	end
 	self.x = x
 	self.y = y
+
+	if oldx ~= self.x or oldy ~= self.y then
+	    return true
+	else
+		return false
+	end
 end
 
 function Position:debugLayout(ui)

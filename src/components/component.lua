@@ -27,6 +27,9 @@ end
 function Component:onMiddleClick()
 end
 
+function Component:onDoubleClick()
+end
+
 function Component:hover()
 end
 

@@ -65,6 +65,14 @@ function Renderer:setOrder(...)
 	self.order = o
 end
 
+function Renderer:getDimensions()
+	for _,r in pairs(self.list) do
+		if r.rendertype == "sprite" then
+			
+		end
+	end
+end
+
 function Renderer:draw()
 	for i=1,#self.order do
 		local render = self.list[self.order[i]]
@@ -82,14 +90,5 @@ function Renderer:update( dt )
 		end
 	end
 end
-
---function Renderer:debugLayout(ui)
-	--ui:layoutRow('dynamic', 20, 1)
-	--ui:label(tostring(self.render))
-	--if self.render then
-	--    self.render:debugLayout(ui)
-	--end
-	
---end
 
 return Renderer

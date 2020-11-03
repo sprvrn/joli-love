@@ -17,14 +17,14 @@ function BrowserClickable:new(entity)
 end
 
 function BrowserClickable:onLeftClick()
-	local element = self.entity:getComponent("BrowserElement")
+	local element = self.entity.browserelement
 	if element and element.onActivation then
 	    element.onActivation(element)
 	end
 end
 
 function BrowserClickable:hoverEnter()
-	local element = self.entity:getComponent("BrowserElement")
+	local element = self.entity.browserelement
 	if element then
 		element.browser:setCurrent(element)
 	end

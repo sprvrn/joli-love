@@ -35,7 +35,7 @@ function BrowserElement:new(entity,data,browser)
 	end
 
 	self.entity:addComponent("SoundSet")
-	self.sounds = self.entity:getComponent("SoundSet")
+	self.sounds = self.entity.soundset
 
 	if data.navsound then
 	    self.sounds:addSource("nav", data.navsound)
@@ -62,9 +62,9 @@ function BrowserElement:updateElement(dt,br)
 	end
 	if self.activationKey and game.input:pressed(self.activationKey) then
 	    if type(self.onActivation) == "function" then
-	    	if self.entity:getComponent("SoundSet") then
-				if self.entity:getComponent("SoundSet").sources.act then
-				    self.entity:getComponent("SoundSet").sources.act:play()
+	    	if self.entity.soundset then
+				if self.entity.soundset.sources.act then
+				    self.entity.soundset.sources.act:play()
 				end
 			end
 	        self.onActivation(self)

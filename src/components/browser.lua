@@ -42,11 +42,11 @@ function Browser:setList(...)
 			element.position.z)
 			:addComponent("BrowserElement",element,self)
 		if type(self.navkeys) == "table" then
-			entityelement:getComponent("browserelement"):add(self.navkeys[1],nxt)
-			entityelement:getComponent("browserelement"):add(self.navkeys[2],prv)
+			entityelement.browserelement:add(self.navkeys[1],nxt)
+			entityelement.browserelement:add(self.navkeys[2],prv)
 		end
 		
-		table.insert(self.list, entityelement:getComponent("browserelement"))
+		table.insert(self.list, entityelement.browserelement)
 	end
 	
 	if #self.list >= 1 then
@@ -65,7 +65,7 @@ function Browser:setPointer(ox,oy,...)
 	oy = oy or 0
 	local entitypointer = scene:newentity("pointer",self.position.x,self.position.y,self.position.z-1)
 		:addComponent("BrowserPointer", ox, oy)
-	self.pointer = entitypointer:getComponent("BrowserPointer")
+	self.pointer = entitypointer.browserpointer
 
 	local args = {...}
 	if #args > 0 then
@@ -90,9 +90,9 @@ function Browser:setCurrent(element)
 	self.current = element
 	self.pointer:setPosition(self.current)
 
-	if self.current.entity:getComponent("SoundSet") then
-		if self.current.entity:getComponent("SoundSet").sources.nav then
-			self.current.entity:getComponent("SoundSet").sources.nav:play()
+	if self.current.entity.soundset then
+		if self.current.entity.soundset.sources.nav then
+			self.current.entity.soundset.sources.nav:play()
 		end
 	end
 

@@ -25,7 +25,7 @@ function BrowserPointer:draw()
 end
 
 function BrowserPointer:setPosition(element)
-	local position = self.entity:getComponent("Position") 
+	local position = self.position
 
 	position.x = element.position.x + self.offsetx
 	position.y = element.position.y + self.offsety

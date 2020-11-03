@@ -39,6 +39,8 @@ function Collider:new(entity, w, h, solid, ox, oy)
 	self.mousehover = false
 	self.dragable = false
 
+	self.doubleclick = false
+
 	self.prevFrameCol = {}
 end
 
@@ -104,8 +106,15 @@ function Collider:update(dt)
 		end
 
 	    if game.input:pressed("leftclick") then
+	    	if self.doubleclick then
+	    	    for _,c in pairs(components) do
+	    	    	c:onDoubleClick()
+	    	    end
+	    	end
 	        for _,c in pairs(components) do
 				c:onLeftClick()
+				self.doubleclick = true
+				self.entity:cron("after",0.2,function()self.doubleclick = false end)
 			end
 	    end
 	    if game.input:pressed("rightclick") then

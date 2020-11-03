@@ -45,23 +45,14 @@ function Entity:addComponent(name, ...)
 	end
 
 	local c = comp(self, ...)
-	--self.components[name] = c
 	table.insert(self.components, c)
 	self[name] = c
 
 	return self
 end
 
-function Entity:getComponent(name)
-	assert(type(name)=="string")
-	
-	name = string.lower(name)
-	for i=1,#self.components do
-		local component = self.components[i]
-		if name == tostring(component) then
-		    return component
-		end
-	end
+function Entity:removeComponent(name)
+	-- TODO
 end
 
 function Entity:update(dt)
