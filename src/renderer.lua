@@ -47,13 +47,4 @@ function Renderer:getPosition(x,y,ox,oy)
 	return x+(ox or self.ox),y+(oy or self.oy)
 end
 
---function Renderer:debugLayout(ui)
---	ui:layoutRow('dynamic', 20, 2)
---	self.ox = ui:property("offset X", -10000000, self.ox, 10000000, 1, 1)
---	self.oy = ui:property("offset Y", -10000000, self.oy, 10000000, 1, 1)
-	--ui:layoutRow('dynamic', 60, 1)
-	--self.tint[1],self.tint[2],self.tint[3],self.tint[4] =
-	--	nuklear.colorParseRGBA(ui:colorPicker(nuklear.colorRGBA(self.tint[1],self.tint[2],self.tint[3],self.tint[4])))
---end
-
 return Renderer

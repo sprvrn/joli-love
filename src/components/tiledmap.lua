@@ -139,7 +139,7 @@ function TiledMap:new(entity, mapdata, startx, starty, w, h, layers, obj)
 	local cameraboundx1,cameraboundy1 = (self.map.startx-1)*tw,(self.map.starty-1)*th
 	local cameraboundx2,cameraboundy2 = cameraboundx1+(self.map.mapWidth-screenTileW)*tw,cameraboundy1+(self.map.mapHeight-screenTileH)*th
 
-	--camera:setWindow(cameraboundx1,cameraboundy1,cameraboundx2,cameraboundy2)
+	camera:setWindow(cameraboundx1,cameraboundy1,cameraboundx2,cameraboundy2)
 end
 
 function TiledMap:update( dt )

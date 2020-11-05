@@ -41,11 +41,22 @@ function Parallax:setPosition(x,y)
 	local bottomleftx, bottomlefty = topleftx, toplefty + self.height
 	local bottomrightx, bottomrighty = toprightx, bottomlefty
 
+	if not self.lockX then
+	    topleftx, toprightx, bottomleftx, bottomrightx = topleftx+self.camera.x, toprightx+self.camera.x, bottomleftx+self.camera.x, bottomrightx+self.camera.x
+	else
+	    topleftx, toprightx, bottomleftx, bottomrightx = self.camera.x,self.camera.x,self.camera.x,self.camera.x
+	end
+	if not self.lockY then
+	    toplefty, toprighty, bottomlefty, bottomrighty = toplefty+self.camera.y, toprighty+self.camera.y, bottomlefty+self.camera.y, bottomrighty+self.camera.y
+	else
+	    toplefty, toprighty, bottomlefty, bottomrighty = self.camera.y,self.camera.y,self.camera.y,self.camera.y
+	end
+
 	local renderer = self.entity.renderer
-	renderer:get("topleft"):setOffset(topleftx+self.camera.x, toplefty+self.camera.y)
-	renderer:get("topright"):setOffset(toprightx+self.camera.x, toprighty+self.camera.y)
-	renderer:get("bottomleft"):setOffset(bottomleftx+self.camera.x, bottomlefty+self.camera.y)
-	renderer:get("bottomright"):setOffset(bottomrightx+self.camera.x, bottomrighty+self.camera.y)
+	renderer:get("topleft"):setOffset(topleftx, toplefty)
+	renderer:get("topright"):setOffset(toprightx, toprighty)
+	renderer:get("bottomleft"):setOffset(bottomleftx, bottomlefty)
+	renderer:get("bottomright"):setOffset(bottomrightx, bottomrighty)
 end
 
 return Parallax
