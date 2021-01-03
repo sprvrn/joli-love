@@ -6,13 +6,13 @@ function Parallax:__tostring()
 	return "parallax"
 end
 
-function Parallax:new(entity, camera, speed, ...)
+function Parallax:new(entity, camera, speedX, speedY, ...)
 	Parallax.super.new(self, entity)
 
-	self.lockX = false
-	self.lockY = false
-
-	self.entity:addComponent("Renderer")
+	if not self.entity.renderer then
+	    self.entity:addComponent("Renderer")
+	end
+	
 	local renderer = self.entity.renderer
 	renderer:add("topleft", ...)
 	renderer:add("topright", ...)
@@ -23,12 +23,17 @@ function Parallax:new(entity, camera, speed, ...)
 	self.height = renderer:get("topleft").sprite.size.h
 
 	self.camera = camera
-	self.speed = speed or 1
+
+	self.speedX = speedX or 1
+	self.speedY = speedY or 1
+
+	self.lockX = false
+	self.lockY = false
 end
 
 function Parallax:update(dt)
 	if self.camera then
-	    self:setPosition(self.camera.x / self.speed, self.camera.y / self.speed)
+	    self:setPosition(self.camera.x / self.speedX, self.camera.y / self.speedY)
 	end
 end
 

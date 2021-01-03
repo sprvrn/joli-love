@@ -205,7 +205,6 @@ function Scene:draw()
 			end
 		end
 
-		--print(layer.name,#entities,#layer.batches)
 		for b=1,#layer.batches do
 			love.graphics.draw(layer.batches[b], 0, 0)
 		end

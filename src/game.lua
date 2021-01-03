@@ -76,7 +76,9 @@ function Game:new(version)
 
 	self.filename = "1"
 
-	self.input = baton.new(self.assets.inputs)
+	if self.assets.inputs then
+	    self.input = baton.new(self.assets.inputs)
+	end
 
 	self.displaydebug = false
 	self.debug = require("src.debug")()
@@ -169,15 +171,6 @@ end
 function Game:state()
 	return self.current_state
 end
-
---[[function Game:stateUpdate(state,dt)
-	if state.update then
-	    state.update(dt)
-	    if state.parent then
-	        self:stateUpdate(state.parent,dt)
-	    end
-	end
-end]]
 
 function Game:stateUpdate(state,dt)
 	if state.methods.update then

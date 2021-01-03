@@ -6,7 +6,7 @@ MIT License (see licence file)
 
 local Entity = require "src.entity"
 
-local lg = love.graphics
+local lg, lm = love.graphics, love.mouse
 
 local Camera = Entity:extend(Entity)
 
@@ -38,41 +38,41 @@ function Camera:new(scene,name,x,y,w,h,r,sx,sy)
 	self.window = {x1=nil,y1=nil,x2=nil,y2=nil}
 
 	self.following = nil
-	self.smoothfactor = 0.12
+	self.smoothfactor = 0.05
 
 	self.canvas = lg.newCanvas(self.width,self.height)
 end
 
 function Camera:set()
 	if self.scene.hide then
-	    return
+		return
 	end
 	lg.setCanvas(self.canvas)
 	lg.clear()
 
 	lg.push()
 	lg.rotate(-self.r)
-    lg.scale(self.zoom,self.zoom)
-    lg.translate(-self.x, -self.y)
+	lg.scale(self.zoom,self.zoom)
+	lg.translate(-self.x, -self.y)
 end
 
 function Camera:unset()
 	if self.scene.hide then
-	    return
+		return
 	end
-    lg.pop()
+	lg.pop()
 end
 
 function Camera:draw()
 	if self.scene.hide then
-	    return
+		return
 	end
 	lg.setCanvas()
 
 	lg.setColor(1, 1, 1, self.alpha)
 
 	if blendmode then
-	    lg.setBlendMode('alpha','premultiplied')
+		lg.setBlendMode('alpha','premultiplied')
 	end
 
 	local x, y = self.position:get()
@@ -105,21 +105,18 @@ function Camera:setPosition(x, y)
 	if self.window.y1 and self.y<self.window.y1 then
 		self.y=self.window.y1
 	end
- 	if self.window.y2 and self.y>self.window.y2 then
+	if self.window.y2 and self.y>self.window.y2 then
 		self.y=self.window.y2
 	end
 end
 
 function Camera:follow(l)
 	if not self.following then
-	    return
+		return
 	end
 	l = l or 1
 	local x, y = self.following.position.x, self.following.position.y
-	self:setPosition(
-		lerp(self.x, x - self.width*0.5, l),
-		lerp(self.y, y - self.height*0.5, l)
-	)
+	self:setPosition(lerp(self.x, x - self.width*0.5, l),lerp(self.y, y - self.height*0.5, l))
 end
 
 function Camera:move(dx, dy)
@@ -141,15 +138,14 @@ function Camera:fadeout(duration)
 end
 
 function Camera:mousePosition()
-	local mx,my = love.mouse.getX(),love.mouse.getY()
+	local mx,my = lm.getX(),lm.getY()
 
 	if mx > self.width * self.position.scalex or
 		 my > self.height * self.position.scaley or
 		 mx < 0 or my < 0 then
-	    return nil,nil
+		return nil, nil
 	end
 
-	--print(love.mouse.getX(),love.mouse.getY())
 	return mx / self.position.scalex + self.x - self.position.x / self.position.scalex,
 		   my / self.position.scaley + self.y - self.position.y / self.position.scaley
 end
@@ -167,18 +163,18 @@ function Camera:debugLayout(ui)
 		self.x = ui:property("x", -10000000, self.x, 10000000, 1, 1)
 		self.y = ui:property("y", -10000000, self.y, 10000000, 1, 1)
 		if game.settings.mouse then
-		    ui:layoutRow('dynamic', 20, 1)
-		    ui:label("Mouse position")
-		    ui:layoutRow('dynamic', 20, 2)
-		    local mx,my = self:mousePosition()
-		    if mx and my then
-		        ui:label(mx)
-		    	ui:label(my)
-		    else
-		        ui:label("nil")
-		    	ui:label("nil")
-		    end
-		    
+			ui:layoutRow('dynamic', 20, 1)
+			ui:label("Mouse position")
+			ui:layoutRow('dynamic', 20, 2)
+			local mx,my = self:mousePosition()
+			if mx and my then
+				ui:label(mx)
+				ui:label(my)
+			else
+				ui:label("nil")
+				ui:label("nil")
+			end
+			
 		end
 		ui:layoutRow('dynamic', 20, 1)
 		ui:label("Following : "..tostring(self.following))

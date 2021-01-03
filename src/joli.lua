@@ -43,12 +43,18 @@ function joli.new()
 
 	love.resize = function(w,h)
 		if game.settings.scaletowindow then
-		    for _,scene in pairs(game.scenes) do
-		    	for _,camera in pairs(scene.cameras) do
-		    		camera.position.scalex = w / game.settings.canvas.width
-		    		camera.position.scaley = h / game.settings.canvas.height
-		    	end
-		    end
+			for _,scene in pairs(game.scenes) do
+				for _,camera in pairs(scene.cameras) do
+					local sx, sy = w / game.settings.canvas.width, h / game.settings.canvas.height
+					if sx < sy then
+						sy = sx
+					else
+						sx = sy
+					end
+					camera.position.scalex = sx
+					camera.position.scaley = sy
+				end
+			end
 		end
 	end
 end
