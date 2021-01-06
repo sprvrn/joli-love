@@ -31,32 +31,7 @@ function joli.new()
 	io.stdout:setvbuf("no")
 	
 	game = require("src.game")()
-	game:start()
-
-	love.update = function(dt)
-		game:update(dt)
-	end
-
-	love.draw = function()
-		game:draw()
-	end
-
-	love.resize = function(w,h)
-		if game.settings.scaletowindow then
-			for _,scene in pairs(game.scenes) do
-				for _,camera in pairs(scene.cameras) do
-					local sx, sy = w / game.settings.canvas.width, h / game.settings.canvas.height
-					if sx < sy then
-						sy = sx
-					else
-						sx = sy
-					end
-					camera.position.scalex = sx
-					camera.position.scaley = sy
-				end
-			end
-		end
-	end
+	game:init()
 end
 
 return joli

@@ -17,8 +17,6 @@ local Game = Object:extend()
 
 local lg,lf = love.graphics,love.filesystem
 
-local eventcall = {"keypressed","keyreleased","mousepressed","mousereleased","mousemoved","textinput","wheelmoved"}
-
 function Game:new(version)
 	self.joliversion = version
 	lg.setDefaultFilter("nearest", "nearest")
@@ -80,19 +78,16 @@ function Game:new(version)
 	    self.input = baton.new(self.assets.inputs)
 	end
 
+	require ("src.love2dcalls")()
+
 	self.displaydebug = false
 	self.debug = require("src.debug")()
 	self.gui = require("src.gui")()
 
-	for _,name in pairs(eventcall) do
-		love[name] = function(...)
-			if self.gui then
-			    self.gui.ui[name](self.gui.ui,...)
-			end
-		end
-	end
-
 	self:setWindow()
+
+	self.viewx = 0
+	self.viewy = 0
 end
 
 function Game:getComponent(name)
@@ -200,7 +195,7 @@ function Game:stateDraw(state,t)
 	return t
 end
 
-function Game:start(statename)
+function Game:init(statename)
 	if not statename then
 	    for name,state in pairs(self.statetree) do
 			self:stateActivation(name)

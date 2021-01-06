@@ -34,6 +34,7 @@ function Scene:new(name, layers)
 		game.settings.canvas.height,
 		0,
 		game.settings.canvas.scale)
+	self.cameras.main:resizeToWindow()
 end
 
 function Scene:newentity(name, ...)
@@ -206,7 +207,7 @@ function Scene:draw()
 		end
 
 		for b=1,#layer.batches do
-			love.graphics.draw(layer.batches[b], 0, 0)
+			lg.draw(layer.batches[b], 0, 0)
 		end
 	end
 end

@@ -77,7 +77,7 @@ function Camera:draw()
 
 	local x, y = self.position:get()
 	
-	lg.draw(self.canvas,x,y,0,self.position.scalex,self.position.scaley)
+	lg.draw(self.canvas,x+game.viewx,y+game.viewy,0,self.position.scalex,self.position.scaley)
 	lg.setBlendMode("alpha")
 	lg.setColor(1,1,1,1)
 end
@@ -138,7 +138,7 @@ function Camera:fadeout(duration)
 end
 
 function Camera:mousePosition()
-	local mx,my = lm.getX(),lm.getY()
+	local mx,my = lm.getX()-game.viewx,lm.getY()-game.viewy
 
 	if mx > self.width * self.position.scalex or
 		 my > self.height * self.position.scaley or
@@ -146,12 +146,28 @@ function Camera:mousePosition()
 		return nil, nil
 	end
 
-	return mx / self.position.scalex + self.x - self.position.x / self.position.scalex,
-		   my / self.position.scaley + self.y - self.position.y / self.position.scaley
+	return ((mx / self.position.scalex + self.x - self.position.x / self.position.scalex)),
+		   ((my / self.position.scaley + self.y - self.position.y / self.position.scaley))
 end
 
 function Camera:toScreen(x,y)
 	return (x - self.x) * self.scalex , (y - self.y) * self.scaley
+end
+
+function Camera:resizeToWindow(w,h)
+	w = w or lg.getWidth()
+	h = h or lg.getHeight()
+	local sx, sy = w / game.settings.canvas.width, h / game.settings.canvas.height
+	if sx < sy then
+		sy = sx
+	else
+		sx = sy
+	end
+	self.position.scalex = sx
+	self.position.scaley = sy
+
+	game.viewx = (w - (sx * game.settings.canvas.width)) / 2
+	game.viewy = (h - (sy * game.settings.canvas.height)) / 2
 end
 
 function Camera:debugLayout(ui)
