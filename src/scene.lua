@@ -8,6 +8,7 @@ local Object = require "libs.classic"
 local Camera = require "src.camera"
 local Entity = require "src.entity"
 local Layer = require "src.layer"
+
 local bump = require "libs.bump"
 
 local lg = love.graphics
@@ -48,7 +49,7 @@ function Scene:newentity(name, ...)
 	local newEntity = Entity(name, ...)
 	newEntity.scene = self
 	if newEntity.layer then
-	    newEntity.layer = self:getLayer(newEntity.layer)
+		newEntity.layer = self:getLayer(newEntity.layer)
 	end
 	if self[name] then
 		--print("Warning : an entity named " .. name .. " already exists.")
@@ -74,7 +75,7 @@ end
 function Scene:getLayer(layer)
 	for i=1,#self.layers do
 		if self.layers[i].name == layer then
-		    return self.layers[i]
+			return self.layers[i]
 		end
 	end
 end
@@ -118,7 +119,7 @@ function Scene:getByLayer(name)
 	for i=1,#self.entities do
 		local e = self.entities[i]
 		if e.layer then
-		    if name == e.layer.name then
+			if name == e.layer.name then
 				table.insert(r, e)
 			end
 		end
@@ -166,16 +167,25 @@ function Scene:update(dt)
 		if self.world and game.settings.mouse then
 			local mx, my = camera:mousePosition()
 			if mx and my then
-			    local items, len = self.world:queryPoint(mx, my, function(item)
+				if self.drawingTopCamera then
+					mx, my = mx + camera.x, my + camera.y
+				end
+				local items, len = self.world:queryPoint(mx, my, function(item)
 					if tostring(item) == "collider" then
 						return true
 					end
 				end)
 
-				for i=1,len do
-					local item = items[i]
-					item.mousehover = true
+				--for i=1,len do
+				--	local item = items[i]
+				--	item.mousehover = true
+				--end
+				if type(items) == "table" and len > 0 then
+				    items[len].mousehover = true
 				end
+				
+
+				-- todo : focus on top item only
 			end
 		end
 	end
@@ -183,15 +193,16 @@ function Scene:update(dt)
 	for i=1,#self.entities do
 		local entity = self.entities[i]
 		if entity then
-		    entity:update(dt)
+			entity:update(dt)
 		end
 	end
 end
 
 function Scene:draw()
 	if self.hide then
-	    return
+		return
 	end
+
 	for i=1,#self.layers do
 		local layer = self.layers[i]
 		for b=1,#layer.batches do
@@ -202,7 +213,7 @@ function Scene:draw()
 		for e=1,#entities do
 			local entity = entities[e]
 			if entity then
-			    entity:draw()
+				entity:draw()
 			end
 		end
 
@@ -223,7 +234,7 @@ function Scene:drawentities(tags,mode)
 	for i=1,#self.entities do
 		local entity = self.entities[i]
 		if entity then
-		    if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
+			if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
 				(tags ~= nil and mode == "excl" and not table.contains(tags,entity.tag)) or
 				tags == nil then
 
@@ -238,7 +249,7 @@ function Scene:particle(system,x,y,z,layer)
 	for i=1,rate do
 		local rndcolor = nil
 		if system.colors then
-		    rndcolor = system.colors[math.floor(love.math.random(1,#system.colors))]
+			rndcolor = system.colors[math.floor(love.math.random(1,#system.colors))]
 		end
 		local particle = self:addParticle(x,y,z,
 			rndcolor,
@@ -251,10 +262,10 @@ function Scene:particle(system,x,y,z,layer)
 		particle:velocityy(system.vy[1],system.vy[2],system.vy[3])
 
 		if system.size then
-		    particle:size(system.size[1],system.size[2],system.size[3])
+			particle:size(system.size[1],system.size[2],system.size[3])
 		end
 		if system.alpha then
-		    particle:alpha(system.alpha[1],system.alpha[2],system.alpha[3])
+			particle:alpha(system.alpha[1],system.alpha[2],system.alpha[3])
 		end
 		if system.collider then
 			particle.entity:addComponent("Collider",10,10)

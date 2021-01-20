@@ -28,7 +28,7 @@ function Collider:new(entity, w, h, solid, ox, oy)
 	self.solid = solid
 
 	if not self.entity.scene.world then
-	    self.entity.scene:createPhysicWorld()
+		self.entity.scene:createPhysicWorld()
 	end
 	self.entity.scene:addCollider(self)
 
@@ -47,7 +47,7 @@ end
 function Collider:move(x,y)
 	local collidefilter = function(item, other)
 		if other.solid then
-		    return "slide"
+			return "slide"
 		end
 
 		return "cross"
@@ -57,21 +57,21 @@ function Collider:move(x,y)
 	self.collide = {up=nil,down=nil,left=nil,right=nil}
 
 	if len ~= 0 then
-	    for i=1,len do
-	    	local c = cols[i]
-	    	if c.normal.y == -1 then
-	    	    self.collide.down = c.other
-	    	end
-	    	if c.normal.y == 1 then
-	    		self.collide.up = c.other
-	    	end
-	    	if c.normal.x == -1 then
-	    	    self.collide.right = c.other
-	    	end
-	    	if c.normal.x == 1 then
-	    	    self.collide.left = c.other
-	    	end
-	    end
+		for i=1,len do
+			local c = cols[i]
+			if c.normal.y == -1 then
+				self.collide.down = c.other
+			end
+			if c.normal.y == 1 then
+				self.collide.up = c.other
+			end
+			if c.normal.x == -1 then
+				self.collide.right = c.other
+			end
+			if c.normal.x == 1 then
+				self.collide.left = c.other
+			end
+		end
 	end
 
 	return ax, ay
@@ -98,44 +98,53 @@ function Collider:update(dt)
 			for _,c in pairs(components) do
 				c:hoverEnter()
 			end
-		    self.lastframehover = true
+			self.lastframehover = true
 		end
 
-	    for _,c in pairs(components) do
+		for _,c in pairs(components) do
 			c:hover()
 		end
 
-	    if game.input:pressed("leftclick") then
-	    	if self.doubleclick then
-	    	    for _,c in pairs(components) do
-	    	    	c:onDoubleClick()
-	    	    end
-	    	end
-	        for _,c in pairs(components) do
+		if game.input:pressed("leftclick") then
+			if self.doubleclick then
+				for _,c in pairs(components) do
+					c:onDoubleClick()
+				end
+			end
+			for _,c in pairs(components) do
 				c:onLeftClick()
+				self.clicked = {x=0,y=0}
 				self.doubleclick = true
 				self.entity:cron("after",0.2,function()self.doubleclick = false end)
 			end
-	    end
-	    if game.input:pressed("rightclick") then
-	        for _,c in pairs(components) do
+		end
+		if game.input:pressed("rightclick") then
+			for _,c in pairs(components) do
 				c:onRightClick()
 			end
-	    end
-	    if game.input:pressed("middleclick") then
-	        for _,c in pairs(components) do
+		end
+		if game.input:pressed("middleclick") then
+			for _,c in pairs(components) do
 				c:onMiddleClick()
 			end
-	    end
+		end
+	end
+
+	if self.dragable then
+		if game.input:down("leftclick") then
+		    
+		else
+		    self.clicked = nil
+		end
 	end
 
 	if not self.mousehover then
 		if self.lastframehover then
-		    for _,c in pairs(components) do
+			for _,c in pairs(components) do
 				c:hoverQuit()
 			end
 		end
-	    self.lastframehover = false
+		self.lastframehover = false
 	end
 
 	if not self.entity.scene.world:hasItem(self) then
@@ -180,7 +189,7 @@ end
 
 function Collider:draw()
 	if self.hidecollider then
-	    return
+		return
 	end
 	if not self.entity.scene.world:hasItem(self) then
 		return
