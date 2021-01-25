@@ -52,7 +52,7 @@ function Collider:move(x,y)
 
 		return "cross"
 	end
-	local ax, ay, cols, len =  self.entity.scene.world:move(self, x, y, collidefilter)
+	local ax, ay, cols, len = self.entity.scene.world:move(self, x, y, collidefilter)
 
 	self.collide = {up=nil,down=nil,left=nil,right=nil}
 
@@ -85,11 +85,13 @@ end
 function Collider:update(dt)
 	self:updatePosition()
 
-	if not self.entity.scene.world:hasItem(self) then
+	local world = self.entity.scene.world
+
+	if not world:hasItem(self) then
 		return
 	end
 
-	self.entity.scene.world:update(self,self.x,self.y,self.w,self.h)
+	world:update(self,self.x,self.y,self.w,self.h)
 
 	-- collision with mouse
 	local components = self.entity.components
@@ -147,7 +149,7 @@ function Collider:update(dt)
 		self.lastframehover = false
 	end
 
-	if not self.entity.scene.world:hasItem(self) then
+	if not world:hasItem(self) then
 		return
 	end
 
@@ -155,8 +157,8 @@ function Collider:update(dt)
 	-- end mouse
 	-- collision with entity
 	local colWith = {}
-	local x,y,w,h = self.entity.scene.world:getRect(self)
-	local items, tlen = self.entity.scene.world:queryRect(x,y,w,h)
+	local x,y,w,h = world:getRect(self)
+	local items, tlen = world:queryRect(x,y,w,h)
 
 	for i=1,tlen do
 		local item = items[i].entity
@@ -191,10 +193,10 @@ function Collider:draw()
 	if self.hidecollider then
 		return
 	end
-	if not self.entity.scene.world:hasItem(self) then
+	if not world:hasItem(self) then
 		return
 	end
-	local x,y,w,h = self.entity.scene.world:getRect(self)
+	local x,y,w,h = world:getRect(self)
 	lg.setColor(0, 1, 0, 1)
 	lg.rectangle("line", x,y,w,h)
 	lg.setColor(1, 1, 1, 1)

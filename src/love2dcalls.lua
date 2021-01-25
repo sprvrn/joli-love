@@ -18,7 +18,7 @@ local set = function()
 	end
 
 	love.resize = function(w,h)
-		if game.settings.scaletowindow then
+		if game.settings.canvas.scaletowindow then
 			for _,scene in pairs(game.scenes) do
 				for _,camera in pairs(scene.cameras) do
 					camera:resizeToWindow(w,h)

@@ -115,34 +115,31 @@ function Game:loadSettings()
 		self.settings = TSerial.unpack(lf.read("settings.sav"))
 	else
 	    self.settings = require("assets.settings")
-	    self.settings = self:getSettings()
+	    self.settings.window.width = self.settings.canvas.width * self.settings.canvas.scale
+		self.settings.window.height = self.settings.canvas.height * self.settings.canvas.scale
 	end
+
+	love.filesystem.setIdentity(self.settings.identity)
 end
 
 function Game:writeSettings(newW,newH)
 	self.settings.window.width = newW
 	self.settings.window.height = newH
-	lf.write("settings.sav",TSerial.pack(self:getSettings()))
-end
-
-function Game:getSettings()
-	local settings = self.settings
-
-	if not settings.window then
-		settings.window = {}
-	    settings.window.width = settings.canvas.width * settings.canvas.scale
-	    settings.window.height = settings.canvas.height * settings.canvas.scale
-	    settings.window.fullscreen = love.window.getFullscreen()
-	end
-
-	return settings
+	lf.write("settings.sav",TSerial.pack(self.settings))
 end
 
 function Game:setWindow()
+	local settings = copy(self.settings).window
+	settings.width = nil
+	settings.height = nil
+	settings.title = nil
+	settings.icon = nil
 	love.window.setMode(
 		self.settings.window.width or lg.getWidth(),
-		self.settings.window.height or lg.getHeight(),{resizable=true})
-	love.window.setFullscreen(self.settings.window.fullscreen)
+		self.settings.window.height or lg.getHeight(),
+		settings)
+	love.window.setTitle(self.settings.window.title)
+	love.window.setIcon(love.image.newImageData(self.settings.window.icon))
 end
 
 function Game:buildStateTree(state,parent)
