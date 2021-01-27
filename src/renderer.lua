@@ -20,6 +20,8 @@ function Renderer:new(tint, ox , oy)
 
 	self.ox = ox or 0
 	self.oy = oy or 0
+
+	self.shader = nil
 end
 
 function Renderer:draw()
@@ -28,6 +30,11 @@ function Renderer:draw()
 		    self.tint[4] = self.alpha
 		end
 	    lg.setColor(self.tint)
+	end
+	if self.shader then
+	    lg.setShader(self.shader)
+	else
+	    lg.setShader()
 	end
 end
 
@@ -40,6 +47,13 @@ function Renderer:setOffset(ox,oy)
 	end
 	if oy then
 	    self.oy = oy
+	end
+end
+
+function Renderer:addShader(name)
+	local shader = game.assets.shaders[name]
+	if shader then
+	    self.shader = shader:get()
 	end
 end
 

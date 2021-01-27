@@ -7,11 +7,13 @@ MIT License (see licence file)
 local Object = require "libs.classic"
 local Scene = require "src.scene"
 local Sprite = require "src.sprite"
+local Shader = require "src.shader"
 
 require "libs.TSerial"
 require "libs.misc"
 local cargo = require("libs.cargo")
 local baton = require ("libs.baton")
+local tick = require ('libs.tick')
 
 local Game = Object:extend()
 
@@ -32,7 +34,8 @@ function Game:new(version)
 	self.assets = cargo.init({
 		dir = 'assets',
 		loaders = {
-			png = Sprite
+			png = Sprite,
+			glsl = Shader
 		}
 	})
 
@@ -73,6 +76,8 @@ function Game:new(version)
 	self.scenes = {}
 
 	self.filename = "1"
+
+	tick.framerate = self.settings.maxfps
 
 	if self.assets.inputs then
 	    self.input = baton.new(self.assets.inputs)

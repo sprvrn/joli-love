@@ -184,7 +184,6 @@ function Scene:update(dt)
 				    items[len].mousehover = true
 				end
 				
-
 				-- todo : focus on top item only
 			end
 		end

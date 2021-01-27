@@ -23,8 +23,8 @@ function Camera:new(scene,name,x,y,w,h,r,sx,sy)
 
 	self.x = x or 0
 	self.y = y or 0
-	self.width = w
-	self.height = h
+	self.width = w or game.settings.canvas.width
+	self.height = h or game.settings.canvas.height
 
 	self.alpha = 1
 
