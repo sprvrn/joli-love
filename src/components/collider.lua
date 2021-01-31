@@ -115,7 +115,7 @@ function Collider:update(dt)
 			end
 			for _,c in pairs(components) do
 				c:onLeftClick()
-				self.clicked = {x=0,y=0}
+				self.clicked = {x=0,y=0} -- TODO (for dragable collider purpose)
 				self.doubleclick = true
 				self.entity:cron("after",0.2,function()self.doubleclick = false end)
 			end
@@ -130,15 +130,26 @@ function Collider:update(dt)
 				c:onMiddleClick()
 			end
 		end
+
+		if game.input:down("leftclick") then
+			for _,c in pairs(components) do
+				c:onLeftClickHold()
+			end
+		end
+		if game.input:released("leftclick") then
+			for _,c in pairs(components) do
+				c:onLeftClickUp()
+			end
+		end
 	end
 
-	if self.dragable then
+	--[[if self.dragable then
 		if game.input:down("leftclick") then
 		    
 		else
 		    self.clicked = nil
 		end
-	end
+	end]]
 
 	if not self.mousehover then
 		if self.lastframehover then

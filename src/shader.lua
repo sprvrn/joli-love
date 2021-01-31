@@ -1,5 +1,5 @@
 local Object = require "libs.classic"
-local lg, lf = love.graphics, love.filesystem
+local lg = love.graphics
 
 local Shader = Object:extend()
 

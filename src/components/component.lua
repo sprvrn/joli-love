@@ -24,6 +24,12 @@ end
 function Component:onLeftClick()
 end
 
+function Component:onLeftClickHold()
+end
+
+function Component:onLeftClickUp()
+end
+
 function Component:onMiddleClick()
 end
 

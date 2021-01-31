@@ -146,8 +146,8 @@ function Camera:mousePosition()
 		return nil, nil
 	end
 
-	return ((mx / self.position.scalex + self.x - self.position.x / self.position.scalex)),
-		   ((my / self.position.scaley + self.y - self.position.y / self.position.scaley))
+	return  ((mx / self.position.scalex + self.x - self.position.x / self.position.scalex)),
+			((my / self.position.scaley + self.y - self.position.y / self.position.scaley))
 end
 
 function Camera:toScreen(x,y)

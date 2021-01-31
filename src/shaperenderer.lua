@@ -39,6 +39,7 @@ function ShapeRenderer:draw(position,ox,oy)
 	lg.push()
 	
 	lg.scale(sx,sy)
+	lg.rotate(r)
 
 	shapefunc[self.type](self.mode, x, y, self.arg1, self.arg2)
 
