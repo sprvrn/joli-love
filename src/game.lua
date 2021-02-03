@@ -10,7 +10,7 @@ local Sprite = require "src.sprite"
 local Shader = require "src.shader"
 
 require "libs.TSerial"
-require "libs.misc"
+require "libs.utils"
 local cargo = require("libs.cargo")
 local baton = require ("libs.baton")
 local tick = require ('libs.tick')
@@ -235,10 +235,6 @@ end
 
 function Game:update(dt)
 	self.input:update(dt)
-
-	if self.gui then
-	    self.gui:update(dt)
-	end
 	
 	if self.settings.debug and self.input:pressed("displaydebug") then
 	    self.displaydebug = not self.displaydebug
@@ -254,6 +250,10 @@ function Game:update(dt)
 	end
 
 	self.debug:update(dt)
+
+	if self.gui then
+	    self.gui:update(dt)
+	end
 
 	self.t = self.t + dt
 end

@@ -14,11 +14,13 @@ function Layer:__tostring()
 	return "layer"
 end
 
-function Layer:new(name, autobatch)
+function Layer:new(name, autobatch, batchusage)
 	self.name = name
 	self.batches = {}
 
 	self.autobatch = autobatch or game.settings.autobatch
+
+	self.batchusage = "stream"
 end
 
 function Layer:getBatch(sprite)
@@ -31,7 +33,7 @@ function Layer:getBatch(sprite)
 	local newbatch = lg.newSpriteBatch(
 		sprite.image,
 		game.settings.batchmaxsprites or 1000,
-		sprite.batchusage or "dynamic"
+		sprite.batchusage or self.batchusage
 		)
 	table.insert(self.batches, newbatch)
 	return newbatch

@@ -204,9 +204,9 @@ function Scene:draw()
 
 	for i=1,#self.layers do
 		local layer = self.layers[i]
-		for b=1,#layer.batches do
-			layer.batches[b]:clear()
-		end
+		--for b=1,#layer.batches do
+			--layer.batches[b]:clear()
+		--end
 
 		local entities = self:getByLayer(layer.name)
 		for e=1,#entities do

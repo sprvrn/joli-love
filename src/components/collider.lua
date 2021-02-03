@@ -204,6 +204,8 @@ function Collider:draw()
 	if self.hidecollider then
 		return
 	end
+	local world = self.entity.scene.world
+	
 	if not world:hasItem(self) then
 		return
 	end

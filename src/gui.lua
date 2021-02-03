@@ -11,6 +11,8 @@ local GUI = Object:extend()
 
 function GUI:new()
 	self.ui = nuklear.newUI()
+
+	self.stats = love.graphics.getStats()
 end
 
 function displayfield(ui,k,v)
@@ -43,6 +45,15 @@ function GUI:update(dt)
 			ui:label("State")
 			if game.current_state then
 			    ui:label(game.current_state.name)
+			end
+
+			if ui:treePush('node',"Stats") then
+				for k,v in pairs(self.stats) do
+					ui:layoutRow('dynamic', 20, 2)
+					ui:label(k)
+					ui:label(tostring(v))
+				end
+				ui:treePop()
 			end
 			
 			for _,scene in pairs(game.scenes) do
@@ -93,6 +104,7 @@ end
 
 function GUI:draw()
 	self.ui:draw()
+	self.stats = love.graphics.getStats()
 end
 
 return GUI

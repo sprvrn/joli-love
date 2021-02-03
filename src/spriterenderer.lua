@@ -75,13 +75,22 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 			if not position.entity.layer.autobatch then
 				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
 			else
-				local batch = position.entity.layer:getBatch(self.sprite)
-				if self.tint then
-				    batch:setColor(self.tint)
+				if not self.batch then
+				    self.batch = position.entity.layer:getBatch(self.sprite)
 				end
-				batch:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+
 				if self.tint then
-				    batch:setColor(1,1,1,1)
+				    self.batch:setColor(self.tint)
+				end
+				
+				if not self.batchId then
+				    self.batchId = self.batch:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				else
+				    self.batch:set(self.batchId,anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				end
+				
+				if self.tint then
+				    self.batch:setColor(1,1,1,1)
 				end
 			end
 		end
@@ -101,6 +110,18 @@ function SpriteRenderer:update(dt)
 			anim.a8:update(dt)
 		end
 	end
+end
+
+function SpriteRenderer:spriteChanged(quad,x,y,r,sx,sy,ox,oy,kx,ky)
+	local p = {quad,x,y,r,sx,sy,kx,ky}
+	if type(self.lastPos) == "table" then
+	    for i=1,#self.lastPos do
+	    	if self.lastPos[i] ~= p[i] then
+	    	    return false
+	    	end
+	    end
+	end
+	return true
 end
 
 function SpriteRenderer:setAnim(name, t, dur)
