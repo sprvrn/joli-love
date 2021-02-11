@@ -12,7 +12,7 @@ function Position:__tostring()
 	return "position"
 end
 
-function Position:new(entity,x,y,z,r,sx,sy)
+function Position:new(entity,x,y,z,r,sx,sy,ox,oy)
 	Position.super.new(self,entity)
 	self.x = x or 0
 	self.y = y or 0
@@ -20,10 +20,12 @@ function Position:new(entity,x,y,z,r,sx,sy)
 	self.r = r or 0
 	self.scalex = sx or 1
 	self.scaley = sy or 1
+	self.originx = ox or 0
+	self.originy = oy or 0
 end
 
 function Position:get()
-	local x,y,z,r,sx,sy = self.x,self.y,self.z,self.r,self.scalex,self.scaley
+	local x,y,z,r,sx,sy,ox,oy = self.x,self.y,self.z,self.r,self.scalex,self.scaley,self.originx,self.originy
 	
 	if self.shakex then
 	    --x = x + self.shakex

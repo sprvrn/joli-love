@@ -40,13 +40,17 @@ function Entity:addComponent(name, ...)
 	name = string.lower(name)
 	local comp = game:getComponent(name)
 	if not comp then
-	    print("Warning, fail to add <"..name.."> component : does not exists. (entity : "..self.name..")")
+	    print("Warning: fail to add <"..name.."> component : does not exists. (entity : "..self.name..")")
 	    return self
 	end
 
-	local c = comp(self, ...)
-	table.insert(self.components, c)
-	self[name] = c
+	if self[name] then
+	    print("Warning: <"..name.."> component is already attached to entity <"..self.name..">")
+	else
+		local c = comp(self, ...)
+		table.insert(self.components, c)
+		self[name] = c
+	end
 
 	return self
 end
