@@ -21,7 +21,11 @@ local set = function()
 		if game.settings.canvas.scaletowindow then
 			for _,scene in pairs(game.scenes) do
 				for _,camera in pairs(scene.cameras) do
-					camera:resizeToWindow(w,h)
+					if type(camera.onWindowResize) == "function" then
+					    camera.onWindowResize(camera)
+					else
+					    camera:resizeToWindow(w,h)
+					end
 				end
 			end
 		end

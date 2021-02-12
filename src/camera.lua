@@ -41,6 +41,8 @@ function Camera:new(scene,name,x,y,w,h,r,sx,sy)
 	self.smoothfactor = 0.05
 
 	self.canvas = lg.newCanvas(self.width,self.height)
+
+	self.onWindowResize = nil
 end
 
 function Camera:set()

@@ -73,7 +73,7 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 		local anim = self.sprite.anims[self.animToPlay] 
 		if anim then
 			if not position.entity.layer.autobatch then
-				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
+				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, position.originx, position.originy, kx, ky)
 			else
 				if not self.batch then
 				    self.batch = position.entity.layer:getBatch(self.sprite)
@@ -84,9 +84,9 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 				end
 				
 				if not self.batchId then
-				    self.batchId = self.batch:add(anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				    self.batchId = self.batch:add(anim.a8:getFrameInfo(x, y, r, sx, sy, position.originx, position.originy, kx, ky))
 				else
-				    self.batch:set(self.batchId,anim.a8:getFrameInfo(x, y, r, sx, sy, nil, nil, kx, ky))
+				    self.batch:set(self.batchId,anim.a8:getFrameInfo(x, y, r, sx, sy, position.originx, position.originy, kx, ky))
 				end
 				
 				if self.tint then
@@ -95,7 +95,7 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 			end
 		end
 	else
-		lg.draw(self.sprite.image, x, y, r, sx, sy, nil, nil, kx, ky)
+		lg.draw(self.sprite.image, x, y, r, sx, sy, position.originx, position.originy, kx, ky)
 	end
 
 	if self.tint then

@@ -27,6 +27,9 @@ end
 function Position:get()
 	local x,y,z,r,sx,sy,ox,oy = self.x,self.y,self.z,self.r,self.scalex,self.scaley,self.originx,self.originy
 	
+	x = x + self.originx
+	y = y + self.originy
+
 	if self.shakex then
 	    --x = x + self.shakex
 	end
@@ -69,6 +72,9 @@ function Position:debugLayout(ui)
 	ui:layoutRow('dynamic', 20, 2)
 	self.scalex = ui:property("Scale X", -10000000, self.scalex, 10000000, 1, 1)
 	self.scaley = ui:property("Scale Y", -10000000, self.scaley, 10000000, 1, 1)
+	ui:layoutRow('dynamic', 20, 2)
+	self.originx = ui:property("Origin Offset X", -10000000, self.originx, 10000000, 1, 1)
+	self.originy = ui:property("Origin Offset Y", -10000000, self.originy, 10000000, 1, 1)
 end
 
 return Position

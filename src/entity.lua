@@ -56,7 +56,13 @@ function Entity:addComponent(name, ...)
 end
 
 function Entity:removeComponent(name)
-	-- TODO
+	name = string.lower(name)
+	for k,v in pairs(self.components) do
+		if tostring(v) == name then
+		    table.remove(self.components, getIndex(self.components,v))
+		    self[name] = nil
+		end
+	end
 end
 
 function Entity:update(dt)

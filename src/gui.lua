@@ -103,8 +103,8 @@ end
 
 
 function GUI:draw()
-	self.ui:draw()
 	self.stats = love.graphics.getStats()
+	self.ui:draw()
 end
 
 return GUI
