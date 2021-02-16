@@ -113,6 +113,7 @@ function Collider:update(dt)
 					c:onDoubleClick()
 				end
 			end
+
 			for _,c in pairs(components) do
 				c:onLeftClick()
 				self.clicked = {x=0,y=0} -- TODO (for dragable collider purpose)
@@ -164,7 +165,6 @@ function Collider:update(dt)
 		return
 	end
 
-	self.mousehover = false
 	-- end mouse
 	-- collision with entity
 	local colWith = {}

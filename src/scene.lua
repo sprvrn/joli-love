@@ -193,6 +193,9 @@ function Scene:update(dt)
 		local entity = self.entities[i]
 		if entity then
 			entity:update(dt)
+			if entity.collider then
+			    entity.collider.mousehover = false
+			end
 		end
 	end
 end

@@ -198,12 +198,22 @@ function Game:stateDraw(state,t)
 end
 
 function Game:init(statename)
-	if not statename then
-	    for name,state in pairs(self.statetree) do
-			self:stateActivation(name)
-			break
+	local f = function()
+		self.splash = nil
+		if not statename then
+		    for name,state in pairs(self.statetree) do
+				self:stateActivation(name)
+				break
+			end
 		end
 	end
+	if self.settings.lovesplash then
+	    self.splash = require("libs.o-ten-one")(self.settings.lovesplash)
+	    self.splash.onDone = f
+	else
+	    f()
+	end
+	
 end
 
 function Game:stateActivation(name)
@@ -235,6 +245,11 @@ end
 
 function Game:update(dt)
 	self.input:update(dt)
+
+	if self.splash then
+	    self.splash:update(dt/2)
+	    return
+	end
 	
 	if self.settings.debug and self.input:pressed("displaydebug") then
 	    self.displaydebug = not self.displaydebug
@@ -259,6 +274,10 @@ function Game:update(dt)
 end
 
 function Game:draw()
+	if self.splash then
+	    self.splash:draw()
+	    return
+	end
 	local state = self:state()
 	if state then
 		local draws = self:stateDraw(state, {})
