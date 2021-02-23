@@ -1,6 +1,13 @@
 return {
 	identity = "test",
 
+	lovesplash = {
+		background = {0, 0, 0},
+		fill = nil,
+		delay_before = 1,
+		delay_after = 1
+	},
+
 	window = {
 		title = "joli",
 		icon = "src/joli_icon/joli.png",
@@ -18,7 +25,7 @@ return {
 		scale = 4,
 		scaletowindow = true
 	},
-	maxfps = 120,
+	maxfps = 60,
 
 	debug = true,
 	
