@@ -31,10 +31,10 @@ function Position:get()
 	y = y + self.originy
 
 	if self.shakex then
-	    --x = x + self.shakex
+	    x = x + self.shakex
 	end
 	if self.shakey then
-	    --y = y + self.shakey
+	    y = y + self.shakey
 	end
 
 	return x,y,z,r,sx,sy

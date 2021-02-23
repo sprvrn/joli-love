@@ -49,6 +49,8 @@ function Renderer:add(name, ...)
 		end
 	end
 	-- TODO batch renderer
+
+	return self.list[name]
 end
 
 function Renderer:get(name)
@@ -76,7 +78,7 @@ end
 function Renderer:draw()
 	for i=1,#self.order do
 		local render = self.list[self.order[i]]
-		if render then
+		if render and not render.hide then
 			render:draw(self.position)
 		end
 	end

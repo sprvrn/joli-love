@@ -14,6 +14,7 @@ require "libs.utils"
 local cargo = require("libs.cargo")
 local baton = require ("libs.baton")
 local tick = require ('libs.tick')
+Color = require ("libs.hex2color")
 
 local Game = Object:extend()
 
@@ -87,7 +88,10 @@ function Game:new(version)
 
 	self.displaydebug = false
 	self.debug = require("src.debug")()
-	self.gui = require("src.gui")()
+	if self.settings.debug then
+	    self.gui = require("src.gui")()
+	end
+	
 
 	self:setWindow()
 

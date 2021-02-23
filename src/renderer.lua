@@ -22,9 +22,14 @@ function Renderer:new(tint, ox , oy)
 	self.oy = oy or 0
 
 	self.shader = nil
+
+	self.hide = false
 end
 
 function Renderer:draw()
+	if self.hide then
+	    return
+	end
 	if self.tint then
 		if self.alpha then
 		    self.tint[4] = self.alpha

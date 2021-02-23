@@ -246,7 +246,7 @@ function Scene:drawentities(tags,mode)
 	end
 end
 
-function Scene:particle(system,x,y,z,layer)
+function Scene:particle(system,x,y,z,layer,tag)
 	local rate = system.rate or 1
 	for i=1,rate do
 		local rndcolor = nil
@@ -259,6 +259,7 @@ function Scene:particle(system,x,y,z,layer)
 			love.math.random(system.lifetime[1],system.lifetime[2]),
 			system.text or system.sprite,system.options)
 
+		particle.entity.tag = tag
 		particle.entity.layer = self:getLayer(layer)
 		particle:velocityx(system.vx[1],system.vx[2],system.vx[3])
 		particle:velocityy(system.vy[1],system.vy[2],system.vy[3])
