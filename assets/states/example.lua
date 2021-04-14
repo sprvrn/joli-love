@@ -1,25 +1,32 @@
-return {
-	update = function(dt)
-		local scene = game.scene_game
-		scene:update(dt)
-	end,
+local Object = require "libs.classic"
 
-	draw = function()
-		local scene = game.scene_game
-		local camera = scene.cameras.main
+local Example = Object:extend()
+
+function Example:new()
+	Example.super.new(self)
+end
+
+function Example:onEnter()
+	local scene = game:newscene("scene_game")
+end
+
+function Example:onExit()
+	game.scene_game = nil
+end
+
+function Example:update(dt)
+	game.scene_game:update(dt)
+end
+
+function Example:draw()
+	local scene = game.scene_game
+	local camera = scene.cameras.main
 		
-		camera:set()
-		scene:drawentities("ui","excl")
-		camera:unset()
-		scene:drawentities("ui","incl")
-		camera:draw()
-	end,
+	camera:set()
+	scene:drawentities("ui","excl")
+	camera:unset()
+	scene:drawentities("ui","incl")
+	camera:draw()
+end
 
-	on_enter = function()
-		local scene = game:newscene("scene_game")
-	end,
-
-	on_exit = function()
-		game.scene_game = nil
-	end
-}
+return Example
