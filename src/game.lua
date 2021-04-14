@@ -30,7 +30,7 @@ function Game:new(version)
 
 	self.t = 0
 
-	self.game_states = cargo.init('assets/states')
+	--self.game_states = cargo.init('assets/states')
 
 	self.assets = cargo.init({
 		dir = 'assets',
@@ -152,17 +152,22 @@ function Game:setWindow()
 end
 
 function Game:buildStateTree(state,parent)
-	local t = type(state)
 	local r = {}
-	if t == "table" then
+	if type(state) == "table" then
 		for name,s in pairs(state) do
-			r[name] = {
+			--[[r[name] = {
 				name = name,
 				methods = self.assets.states[name],
 				parent = parent,
 				pause = false,
 				hide = false
 			}
+			r[name].childs = self:buildStateTree(s,r[name])]]
+			r[name] = self.assets.states[name]()
+			r[name].name = name
+			r[name].parent = parent
+			r[name].pause = false
+			r[name].hide = false
 			r[name].childs = self:buildStateTree(s,r[name])
 		end
 	end
@@ -174,9 +179,9 @@ function Game:state()
 end
 
 function Game:stateUpdate(state,dt)
-	if state.methods.update then
+	--if state.methods.update then
 		if not state.pause then
-		    state.methods.update(dt)
+		    state:update(dt)
 		end
 	    
 	    if state.parent and not state.parent.skipnext then
@@ -185,19 +190,19 @@ function Game:stateUpdate(state,dt)
 	    if state.parent then
 	    	state.parent.skipnext = false
 	    end
-	end
+	--end
 end
 
 function Game:stateDraw(state,t)
-	if state.methods.draw then
+	--if state.methods.draw then
 		if not state.hide then
-			table.insert(t, state.methods.draw)
+			table.insert(t, state)
 		end
 	    
 	    if state.parent then
 	        t = self:stateDraw(state.parent,t)
 	    end
-	end
+	--end
 	return t
 end
 
@@ -230,15 +235,15 @@ function Game:stateActivation(name)
 	    end
 	end
 	
-	if self.current_state.methods.on_enter then
-		self.current_state.methods.on_enter()
-	end
+	--if self.current_state.methods.on_enter then
+	self.current_state:onEnter()
+	--end
 end
 
 function Game:stateQuit()
-	if self.current_state.methods.on_exit then
-	    self.current_state.methods.on_exit()
-	end
+	--if self.current_state.methods.on_exit then
+	    self.current_state:onExit()
+	--end
 	if self.current_state.parent then
 		self.current_state = self.current_state.parent
 		self.current_state.skipnext = true
@@ -286,7 +291,7 @@ function Game:draw()
 	if state then
 		local draws = self:stateDraw(state, {})
 		for i=#draws,1,-1 do
-			draws[i]()
+			draws[i]:draw()
 		end
 	else
 		lg.setBackgroundColor(0.3, 0.3, 0.3, 1)

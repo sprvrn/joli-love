@@ -1,5 +1,5 @@
 local joli = {
-_VERSION = '0.3',
+_VERSION = '0.5',
 _DESCRIPTION = 'small framework for love2d',
 _URL = 'https://github.com/sprvrn/joli-love',
 _LICENSE = [[
