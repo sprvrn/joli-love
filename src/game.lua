@@ -30,8 +30,6 @@ function Game:new(version)
 
 	self.t = 0
 
-	--self.game_states = cargo.init('assets/states')
-
 	self.assets = cargo.init({
 		dir = 'assets',
 		loaders = {
@@ -155,20 +153,16 @@ function Game:buildStateTree(state,parent)
 	local r = {}
 	if type(state) == "table" then
 		for name,s in pairs(state) do
-			--[[r[name] = {
-				name = name,
-				methods = self.assets.states[name],
-				parent = parent,
-				pause = false,
-				hide = false
-			}
-			r[name].childs = self:buildStateTree(s,r[name])]]
-			r[name] = self.assets.states[name]()
-			r[name].name = name
-			r[name].parent = parent
-			r[name].pause = false
-			r[name].hide = false
-			r[name].childs = self:buildStateTree(s,r[name])
+			if self.assets.states[name] then
+			    r[name] = self.assets.states[name]()
+				r[name].name = name
+				r[name].parent = parent
+				r[name].pause = false
+				r[name].hide = false
+				r[name].childs = self:buildStateTree(s,r[name])
+			else
+				print("Warning: state "..name.." in state tree not found.")
+			end
 		end
 	end
 	return r
@@ -232,18 +226,20 @@ function Game:stateActivation(name)
 	else
 	    if self.current_state.childs[name] then
 	        self.current_state = self.current_state.childs[name]
+	    else
+	    	if self.current_state.parent and self.current_state.parent[name] then
+	    		self.current_state:onExit()
+	    		self.current_state = self.current_state.parent[name]
+	    	end
 	    end
 	end
 	
-	--if self.current_state.methods.on_enter then
 	self.current_state:onEnter()
-	--end
 end
 
 function Game:stateQuit()
-	--if self.current_state.methods.on_exit then
-	    self.current_state:onExit()
-	--end
+	self.current_state:onExit()
+
 	if self.current_state.parent then
 		self.current_state = self.current_state.parent
 		self.current_state.skipnext = true
