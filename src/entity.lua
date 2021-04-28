@@ -36,6 +36,30 @@ function Entity:new(name, x, y, z, layer, tag)
 	self.scene = nil
 end
 
+function Entity:setPause(pause)
+	self.pause = pause
+
+	if pause then
+		table.remove(self.scene.updatedEntities, getIndex(self.scene.updatedEntities, self))
+	else
+	    if not table.contains(self.scene.updatedEntities, self) then
+	        table.insert(self.scene.updatedEntities, self)
+	    end
+	end
+end
+
+function Entity:setHide(hide)
+	self.hide = hide
+
+	if hide then
+		table.remove(self.scene.drawnEntities, getIndex(self.scene.drawnEntities, self))
+	else
+	    if not table.contains(self.scene.drawnEntities, self) then
+	        table.insert(self.scene.drawnEntities, self)
+	    end
+	end
+end
+
 function Entity:addComponent(name, ...)
 	name = string.lower(name)
 	local comp = game:getComponent(name)
@@ -123,8 +147,10 @@ function Entity:tween(duration, target, easing, subject)
 end
 
 function Entity:toggle()
-	self.pause = not self.pause
-	self.hide = not self.hide
+	--self.pause = not self.pause
+	--self.hide = not self.hide
+	self:setPause(not self.pause)
+	self:setHide(not self.hide)
 end
 
 function Entity:shake(duration,magnitudex,magnitudey)

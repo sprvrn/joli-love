@@ -172,6 +172,10 @@ function Game:state()
 	return self.current_state
 end
 
+function Game:states()
+	return self.statetree
+end
+
 function Game:stateUpdate(state,dt)
 	--if state.methods.update then
 		if not state.pause then
@@ -223,18 +227,19 @@ function Game:stateActivation(name)
 	assert(type(name)=="string")
 	if not self.current_state then
 	    self.current_state = self.statetree[name]
+	    self.current_state:onEnter()
 	else
 	    if self.current_state.childs[name] then
 	        self.current_state = self.current_state.childs[name]
+	        self.current_state:onEnter()
 	    else
-	    	if self.current_state.parent and self.current_state.parent[name] then
+	    	if self.current_state.parent and self.current_state.parent.childs[name] then
 	    		self.current_state:onExit()
-	    		self.current_state = self.current_state.parent[name]
+	    		self.current_state = self.current_state.parent.childs[name]
+	    		self.current_state:onEnter()
 	    	end
 	    end
 	end
-	
-	self.current_state:onEnter()
 end
 
 function Game:stateQuit()

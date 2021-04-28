@@ -15,12 +15,21 @@ local lg = love.graphics
 
 local Scene = Entity:extend()
 
+local sortByZ = function(a,b)
+	return a.position.z < b.position.z
+end
+local sortByName = function(a,b)
+	return a.name < b.name
+end
+
 function Scene:new(name, layers)
 	Scene.super.new(self,name)
 
 	self.cameras = {}
 
 	self.entities = {}
+	self.updatedEntities = {}
+	self.drawnEntities = {}
 
 	self.layers = {}
 	local layers = layers or {}
@@ -39,12 +48,7 @@ function Scene:new(name, layers)
 end
 
 function Scene:newentity(name, ...)
-	local sortByZ = function(a,b)
-		return a.position.z < b.position.z
-	end
-	local sortByName = function(a,b)
-		return a.name < b.name
-	end
+	
 
 	local newEntity = Entity(name, ...)
 	newEntity.scene = self
@@ -56,8 +60,19 @@ function Scene:newentity(name, ...)
 	end
 	table.insert(self.entities, newEntity)
 
-	table.sort(self.entities, sortByName)
-	table.sort(self.entities, sortByZ)
+
+	newEntity:setPause(false)
+	newEntity:setHide(false)
+
+
+	--table.sort(self.entities, sortByName)
+	--table.sort(self.entities, sortByZ)
+
+	table.sort(self.updatedEntities, sortByName)
+	table.sort(self.drawnEntities, sortByZ)
+
+	table.sort(self.updatedEntities, sortByName)
+	table.sort(self.drawnEntities, sortByZ)
 
 	self[name] = newEntity
 	return newEntity
@@ -128,11 +143,19 @@ function Scene:getByLayer(name)
 end
 
 function Scene:removeentity(entity)
+	if entity and entity.scene == self then
+	    if not self[entity.name] then
+	    	print("Warning trying to delete "..entity.name.." entity. Not in the entity list of this scene", self.name)
+	        return
+	    end
+	end
 	if entity.collider and self.world then
 		self.world:remove(entity.collider)
 	end
 	self[entity.name] = nil
 	table.remove(self.entities, getIndex(self.entities,entity))
+	table.remove(self.updatedEntities, getIndex(self.updatedEntities,entity))
+	table.remove(self.drawnEntities, getIndex(self.drawnEntities,entity))
 end
 
 function Scene:addCamera(name,...)
@@ -176,12 +199,12 @@ function Scene:update(dt)
 					end
 				end)
 
-				--for i=1,len do
-				--	local item = items[i]
-				--	item.mousehover = true
-				--end
+				for i=1,len do
+					local item = items[i]
+					item.mousehover = true
+				end
 				if type(items) == "table" and len > 0 then
-				    items[len].mousehover = true
+				    --items[len].mousehover = true
 				end
 				
 				-- todo : focus on top item only
@@ -189,8 +212,18 @@ function Scene:update(dt)
 		end
 	end
 
-	for i=1,#self.entities do
-		local entity = self.entities[i]
+	--table.sort(self.entities, sortByName)
+	--table.sort(self.entities, sortByZ)
+	--
+
+	table.sort(self.updatedEntities, sortByName)
+	table.sort(self.drawnEntities, sortByZ)
+
+	table.sort(self.updatedEntities, sortByName)
+	table.sort(self.drawnEntities, sortByZ)
+
+	for i=1,#self.updatedEntities do
+		local entity = self.updatedEntities[i]
 		if entity then
 			entity:update(dt)
 			if entity.collider then
@@ -233,8 +266,8 @@ function Scene:drawentities(tags,mode)
 	if type(tags) == "string" then
 		tags = {tags}
 	end
-	for i=1,#self.entities do
-		local entity = self.entities[i]
+	for i=1,#self.drawnEntities do
+		local entity = self.drawnEntities[i]
 		if entity then
 			if  (tags ~= nil and mode == "incl" and table.contains(tags,entity.tag)) or
 				(tags ~= nil and mode == "excl" and not table.contains(tags,entity.tag)) or
