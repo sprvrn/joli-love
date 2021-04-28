@@ -276,7 +276,7 @@ function Game:update(dt)
 
 	self.debug:update(dt)
 
-	if self.gui then
+	if self.gui and self.displaydebug then
 	    self.gui:update(dt)
 	end
 
