@@ -36,14 +36,18 @@ function TextRenderer:setStyle(name)
 	self.tint = self.style.color or {1,1,1,1}
 end
 
-function TextRenderer:draw(position,ox,oy)
+function TextRenderer:draw(position, x, y, z, r, sx, sy,ox,oy)
 	TextRenderer.super.draw(self)
 
-	local x,y,z,r,sx,sy = position:get()
+	--local x,y,z,r,sx,sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
 	
 	if self.style.font then
 	    lg.setFont(self.style.font)
+	end
+
+	if self.clip then
+	    lg.setScissor(position.x+self.clip.x,position.y+self.clip.y,self.clip.width,self.clip.height)
 	end
 	
 	lg.push()
@@ -53,6 +57,9 @@ function TextRenderer:draw(position,ox,oy)
 
 	if self.tint then
 	    lg.setColor(1,1,1,1)
+	end
+	if self.clip then
+	    lg.setScissor()
 	end
 end
 

@@ -55,6 +55,10 @@ function Renderer:setOffset(ox,oy)
 	end
 end
 
+function Renderer:setClip(x,y,w,h)
+	self.clip = {x=x,y=y,width=w,height=h}
+end
+
 function Renderer:addShader(name)
 	local shader = game.assets.shaders[name]
 	if shader then

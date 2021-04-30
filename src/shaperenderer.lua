@@ -31,10 +31,14 @@ function ShapeRenderer:new(type, color, mode, arg1, arg2)
 	self.tint = color
 end
 
-function ShapeRenderer:draw(position,ox,oy)
+function ShapeRenderer:draw(position, x, y, z, r, sx, sy,ox,oy)
 	ShapeRenderer.super.draw(self)
-	local x, y, z, r, sx, sy = position:get()
+	--local x, y, z, r, sx, sy = position:get()
 	x, y = self:getPosition(x,y,ox,oy)
+
+	if self.clip then
+	    lg.setScissor(position.x+self.clip.x,position.y+self.clip.y,self.clip.width,self.clip.height)
+	end
 
 	lg.push()
 	
@@ -47,6 +51,10 @@ function ShapeRenderer:draw(position,ox,oy)
 
 	if self.tint then
 	    lg.setColor(1,1,1,1)
+	end
+
+	if self.clip then
+	    lg.setScissor()
 	end
 end
 

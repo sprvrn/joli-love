@@ -67,6 +67,20 @@ function Renderer:setOrder(...)
 	self.order = o
 end
 
+function Renderer:setOrderPosition(name,i)
+	local shift = function(t, old, new)
+	    local value = t[old]
+	    if new < old then
+	       table.move(t, new, old - 1, new + 1)
+	    else    
+	       table.move(t, old + 1, new, old) 
+    end
+	    t[new] = value
+	end
+
+	shift(self.order, getIndex(self.order,name), i)
+end
+
 function Renderer:getDimensions()
 	for _,r in pairs(self.list) do
 		if r.rendertype == "sprite" then
@@ -75,11 +89,12 @@ function Renderer:getDimensions()
 	end
 end
 
-function Renderer:draw()
+function Renderer:draw(ox, oy)
 	for i=1,#self.order do
 		local render = self.list[self.order[i]]
 		if render and not render.hide then
-			render:draw(self.position)
+			local x, y, z, r, sx, sy = self.position:get()
+			render:draw(self.position, x + (ox or 0), y + (oy or 0), z, r, sx, sy)
 		end
 	end
 end

@@ -44,10 +44,10 @@ function SpriteRenderer:new(sprite, anim, ox, oy, sx, sy, flipx, flipy)
 	end
 end
 
-function SpriteRenderer:draw(position, ox, oy, kx, ky)
+function SpriteRenderer:draw(position, x, y, z, r, sx, sy, ox, oy, kx, ky)
 	SpriteRenderer.super.draw(self)
 
-	local x, y, z, r, sx, sy = position:get()
+	--local x, y, z, r, sx, sy = position:get()
 	x,y = self:getPosition(x,y,ox,oy)
 
 	if self.scalex > 1 then
@@ -69,10 +69,14 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 	    y = y + self.sprite.size.h * osy
 	end
 
+	if self.clip then
+	    lg.setScissor(position.x+self.clip.x,position.y+self.clip.y,self.clip.width,self.clip.height)
+	end
+
 	if self.animToPlay then
 		local anim = self.sprite.anims[self.animToPlay] 
 		if anim then
-			if not position.entity.layer.autobatch then
+			if not position.entity.layer or not position.entity.layer.autobatch then
 				anim.a8:draw(self.sprite.image, x, y, r, sx, sy, position.originx, position.originy, kx, ky)
 			else
 				if not self.batch then
@@ -100,6 +104,10 @@ function SpriteRenderer:draw(position, ox, oy, kx, ky)
 
 	if self.tint then
 		lg.setColor(1,1,1,1)
+	end
+
+	if self.clip then
+	    lg.setScissor()
 	end
 end
 
