@@ -48,22 +48,30 @@ function Scene:new(name, layers)
 end
 
 function Scene:newentity(name, ...)
-	
-
 	local newEntity = Entity(name, ...)
 	newEntity.scene = self
 	if newEntity.layer then
 		newEntity.layer = self:getLayer(newEntity.layer)
 	end
+
 	if self[name] then
-		--print("Warning : an entity named " .. name .. " already exists.")
+		local i = 1
+		while true do
+			local newname = name.."("..i..")"
+			if not self[newname] then
+			    name = newname
+			    newEntity.name = name
+			    break
+			end
+			i = i + 1
+		end
 	end
+
 	table.insert(self.entities, newEntity)
 
 
 	newEntity:setPause(false)
 	newEntity:setHide(false)
-
 
 	--table.sort(self.entities, sortByName)
 	--table.sort(self.entities, sortByZ)
@@ -149,13 +157,15 @@ function Scene:removeentity(entity)
 	        return
 	    end
 	end
-	if entity.collider and self.world then
+	if entity and entity.collider and self.world then
 		self.world:remove(entity.collider)
 	end
-	self[entity.name] = nil
-	table.remove(self.entities, getIndex(self.entities,entity))
-	table.remove(self.updatedEntities, getIndex(self.updatedEntities,entity))
-	table.remove(self.drawnEntities, getIndex(self.drawnEntities,entity))
+	if entity then
+	    self[entity.name] = nil
+		table.remove(self.entities, getIndex(self.entities,entity))
+		table.remove(self.updatedEntities, getIndex(self.updatedEntities,entity))
+		table.remove(self.drawnEntities, getIndex(self.drawnEntities,entity))
+	end
 end
 
 function Scene:addCamera(name,...)
