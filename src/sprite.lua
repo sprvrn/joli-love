@@ -69,6 +69,7 @@ function Sprite:new(filepath)
 				end
 
 				self.anims[a.name] = {
+					id=i,
 					name = a.name,
 					x = data.frames[i].frame.x, y = data.frames[i].frame.y,
 					frame_ct = a.to - a.from + 1,

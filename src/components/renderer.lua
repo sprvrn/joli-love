@@ -11,6 +11,8 @@ local ShapeRenderer = require "src.shaperenderer"
 local TextRenderer = require "src.textrenderer"
 local BatchRenderer = require "src.batchrenderer"
 
+local lg = love.graphics
+
 local Renderer = Component:extend()
 
 function Renderer:__tostring()
@@ -53,6 +55,26 @@ function Renderer:add(name, ...)
 	return self.list[name]
 end
 
+function Renderer:setCanvas(width, height)
+	self.canvas = lg.newCanvas(width, height)
+end
+
+function Renderer:updateCanvas()
+	if self.canvas then
+		lg.setCanvas(self.canvas)
+		lg.clear()
+
+		local x, y, z, r, sx, sy = self.position:get()
+
+		x = x - self.position.x
+		y = y - self.position.y
+
+		self:drawAllRenderer(x, y, z, r, sx, sy)
+
+		lg.setCanvas()
+	end
+end
+
 function Renderer:get(name)
 	return self.list[name]
 end
@@ -90,11 +112,23 @@ function Renderer:getDimensions()
 end
 
 function Renderer:draw(ox, oy)
+	local x, y, z, r, sx, sy = self.position:get()
+
+	x = x + (ox or 0)
+	y = y + (oy or 0)
+
+	if self.canvas then
+	    lg.draw(self.canvas, x, y, r, sx, sy)
+	else
+	    self:drawAllRenderer(x, y, z, r, sx, sy)
+	end
+end
+
+function Renderer:drawAllRenderer(x, y, z, r, sx, sy)
 	for i=1,#self.order do
 		local render = self.list[self.order[i]]
 		if render and not render.hide then
-			local x, y, z, r, sx, sy = self.position:get()
-			render:draw(self.position, x + (ox or 0), y + (oy or 0), z, r, sx, sy)
+			render:draw(self.position, x, y, z, r, sx, sy)
 		end
 	end
 end

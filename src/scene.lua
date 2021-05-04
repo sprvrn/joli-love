@@ -163,8 +163,12 @@ function Scene:removeentity(entity)
 	if entity then
 	    self[entity.name] = nil
 		table.remove(self.entities, getIndex(self.entities,entity))
-		table.remove(self.updatedEntities, getIndex(self.updatedEntities,entity))
-		table.remove(self.drawnEntities, getIndex(self.drawnEntities,entity))
+		if table.contains(self.updatedEntities, entity) then
+		    table.remove(self.updatedEntities, getIndex(self.updatedEntities,entity))
+		end
+		if table.contains(self.drawnEntities, entity) then
+			table.remove(self.drawnEntities, getIndex(self.drawnEntities,entity))
+		end
 	end
 end
 

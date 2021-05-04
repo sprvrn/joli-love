@@ -89,7 +89,9 @@ function Game:new(version)
 	if self.settings.debug then
 	    self.gui = require("src.gui")()
 	end
-	
+
+	Icon = require("libs.slog-icon")
+	Icon.configure(self.settings.iconsize, self.assets.sprites[self.settings.iconimg].image)
 
 	self:setWindow()
 
