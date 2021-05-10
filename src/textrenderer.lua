@@ -18,6 +18,8 @@ end
 function TextRenderer:new(text,style,width,align,ox,oy,settings)
 	TextRenderer.super.new(self, nil, ox, oy)
 
+	self.rendertype = "text"
+
 	style = style or "main"
 
 	self.text = tostring(text)
@@ -31,30 +33,49 @@ function TextRenderer:new(text,style,width,align,ox,oy,settings)
 	
 	self.showall = true
 
-	self.rendertype = "text"
-
 	self.settings = settings or {}
-	self.settings.font = self.style.font
-	self.settings.color = self.style.color
+
+	self:setStyle(style)
 
 	self.textbox = Text.new(self.align, self.settings)
 
 	Text.configure.icon_table("Icon")
 
-	if game.assets.sprites[game.settings.iconimg] then
-	    for name,anim in pairs(game.assets.sprites[game.settings.iconimg].anims) do
-	    	local n = string.upper(name)
-	    	self.text = string.gsub(self.text, string.upper(name), tostring(anim.id))
-	    end
-	end
-
-	self.textbox:send(self.text, self.width, self.showall)
+	self:changeText(self.text)
 end
 
 function TextRenderer:setStyle(name)
 	assert(type(name) == "string")
 	self.style = game.assets.fonts[name]
-	self.tint = self.style.color or {1,1,1,1}
+
+	self.settings.font = self.style.font
+	self.settings.color = self.style.color
+
+	local tags = ""
+
+	local addTag = function(param, tag)
+		tag = tag or param
+		
+		if self.style[param] then
+		    tags = tags .. string.format("[%s=%s]", tag, self.style[param])
+		end
+	end
+	
+	addTag("shadow", "dropshadow")
+	addTag("shadowcolor")
+	addTag("shake")
+	addTag("spin")
+	addTag("swing")
+	addTag("raindrop")
+	addTag("bounce")
+	addTag("blink")
+	addTag("rainbow")
+
+	self.settings.autotags = tags
+
+	self.textbox = Text.new(self.align, self.settings)
+
+	self:changeText(self.text)
 end
 
 function TextRenderer:draw(position, x, y, z, r, sx, sy, ox, oy)
@@ -90,6 +111,14 @@ function TextRenderer:changeText(txt)
 
 	self.text = txt
 	self.previoustxt = txt
+
+	if game.assets.sprites[game.settings.iconimg] then
+	    for name,anim in pairs(game.assets.sprites[game.settings.iconimg].anims) do
+	    	local n = string.upper(name)
+	    	self.text = string.gsub(self.text, string.upper(name), tostring(anim.id))
+	    end
+	end
+
 	self.textbox:send(self.text, self.width, self.showall)
 end
 

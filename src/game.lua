@@ -63,10 +63,14 @@ function Game:new(version)
 		if style.font and self.assets.fonts[style.font] then
 		    font = self.assets.fonts[style.font](style.size or 16)
 		end
-		self.assets.fonts[name] = {
-			font = font,
-			color = style.color or {1,1,1,1}
-		}
+		self.assets.fonts[name] = {}
+
+		for k,v in pairs(style) do
+			self.assets.fonts[name][k] = v
+		end
+
+		self.assets.fonts[name].font = font
+		self.assets.fonts[name].color = style.color or {1,1,1,1}
 	end
 
 	self.defaultfont = love.graphics.getFont()
@@ -91,7 +95,9 @@ function Game:new(version)
 	end
 
 	Icon = require("libs.slog-icon")
-	Icon.configure(self.settings.iconsize, self.assets.sprites[self.settings.iconimg].image)
+	if self.assets.sprites[self.settings.iconimg] then
+	    Icon.configure(self.settings.iconsize, self.assets.sprites[self.settings.iconimg].image)
+	end
 
 	self:setWindow()
 
@@ -225,20 +231,24 @@ function Game:init(statename)
 	
 end
 
-function Game:stateActivation(name)
+function Game:stateActivation(name, ...)
 	assert(type(name)=="string")
 	if not self.current_state then
 	    self.current_state = self.statetree[name]
-	    self.current_state:onEnter()
+	    self.current_state:onEnter(...)
 	else
 	    if self.current_state.childs[name] then
 	        self.current_state = self.current_state.childs[name]
-	        self.current_state:onEnter()
+	        self.current_state:onEnter(...)
 	    else
 	    	if self.current_state.parent and self.current_state.parent.childs[name] then
 	    		self.current_state:onExit()
 	    		self.current_state = self.current_state.parent.childs[name]
-	    		self.current_state:onEnter()
+	    		self.current_state:onEnter(...)
+	    	elseif self:states()[name] then
+	    	    self.current_state:onExit()
+	    	    self.current_state = self:states()[name]
+	    	    self.current_state:onEnter(...)
 	    	end
 	    end
 	end

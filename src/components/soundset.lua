@@ -21,6 +21,9 @@ function SoundSet:new(entity)
 end
 
 function SoundSet:addSource(name, sounds, play, loop, intro)
+	if not sounds then
+	    return
+	end
 	self.sources[name] = SoundSource(sounds,self)
 	if play then
 	    self.sources[name]:play(loop, intro)
