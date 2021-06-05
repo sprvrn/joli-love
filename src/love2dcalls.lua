@@ -9,8 +9,8 @@ local eventcall = {
 }
 
 local set = function()
-	love.update = function(dt)
-		game:update(dt)
+	love.update = function()
+		game:update(tick.dt)
 	end
 
 	love.draw = function()

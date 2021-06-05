@@ -13,7 +13,7 @@ require "libs.TSerial"
 require "libs.utils"
 local cargo = require("libs.cargo")
 local baton = require ("libs.baton")
-local tick = require ('libs.tick')
+tick = require ('libs.tick')
 Color = require ("libs.hex2color")
 
 local Game = Object:extend()
