@@ -24,8 +24,6 @@ function Game:new(version)
 	self.joliversion = version
 	lg.setDefaultFilter("nearest", "nearest")
 
-	self.save = require "src.savegame"
-
 	self:loadSettings()
 
 	self.t = 0
@@ -42,6 +40,8 @@ function Game:new(version)
 
 	self.components = cargo.init('src/components')
 	self.assetscomponents = cargo.init('assets/components')
+
+	self.file = require("src.file")(self.assets.save)
 
 	local prefabs = {}
 	for _,p in pairs(self.assets.prefabs()) do
